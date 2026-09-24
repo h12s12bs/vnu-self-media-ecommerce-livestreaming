@@ -65,11 +65,13 @@
       color: #201A12;
       touch-action: pan-y;
       -webkit-tap-highlight-color: transparent;
+      margin: 0;
+      padding: 0;
     }
     .warm-card {
       background: #FFFFFF;
       border: 1px solid #EAE4D6;
-      box-shadow: 0 4px 16px -2px rgba(56, 48, 36, 0.06);
+      box-shadow: 0 4px 16px -2px rgba(56, 48, 36, 0.05);
       border-radius: 1.25rem;
     }
     .warm-badge {
@@ -81,10 +83,62 @@
       font-size: 0.8rem;
       font-weight: 700;
     }
-    /* 全螢幕背景與排版 */
-    :fullscreen body, :-webkit-full-screen body {
+    
+    /* ========================================= */
+    /* 真正無邊框滿版全螢幕 CSS (Pure Edge-to-Edge) */
+    /* ========================================= */
+    body.is-fullscreen {
+      overflow: hidden !important;
       background-color: #FAF8F5 !important;
     }
+    body.is-fullscreen header,
+    body.is-fullscreen footer,
+    body.is-fullscreen #progress-bar-container {
+      display: none !important;
+    }
+    body.is-fullscreen #main-deck-area {
+      padding: 0 !important;
+      margin: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      max-width: 100vw !important;
+      max-height: 100vh !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
+    body.is-fullscreen #slide-wrapper {
+      width: 100vw !important;
+      height: 100vh !important;
+      max-width: 100vw !important;
+      max-height: 100vh !important;
+      border-radius: 0 !important;
+      border: none !important;
+      box-shadow: none !important;
+      margin: 0 !important;
+      padding: 2.5rem 3.5rem !important;
+      box-sizing: border-box !important;
+    }
+    @media (max-width: 640px) {
+      body.is-fullscreen #slide-wrapper {
+        padding: 1.25rem 1rem 4rem 1rem !important;
+      }
+    }
+
+    /* 全螢幕浮動控制條 (滑鼠靜止自動淡出，移動即浮現) */
+    #fs-floating-bar {
+      display: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    body.is-fullscreen #fs-floating-bar {
+      display: flex;
+    }
+    body.is-fullscreen:hover #fs-floating-bar,
+    body.is-fullscreen.show-controls #fs-floating-bar {
+      opacity: 1;
+    }
+
     /* 滾動條樣式 */
     ::-webkit-scrollbar {
       width: 5px;
@@ -99,14 +153,14 @@
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col font-sans select-none antialiased">
+<body class="min-h-screen flex flex-col font-sans select-none antialiased" id="body-container">
 
   <!-- 頂部進度條 -->
-  <div class="w-full h-1.5 bg-warm-200 sticky top-0 z-50">
+  <div class="w-full h-1.5 bg-warm-200 sticky top-0 z-50" id="progress-bar-container">
     <div id="progress-bar" class="h-full bg-terracotta-500 transition-all duration-300" style="width: 2%;"></div>
   </div>
 
-  <!-- 頂部導航列 -->
+  <!-- 頂部導航列 (全螢幕時隱藏) -->
   <header class="w-full px-3 md:px-6 py-2.5 flex items-center justify-between border-b border-warm-200 bg-white/90 backdrop-blur sticky top-1.5 z-40">
     <div class="flex items-center gap-2 md:gap-3 min-w-0">
       <div class="w-8 h-8 rounded-lg bg-terracotta-500 text-white flex items-center justify-center font-black text-xs shadow-sm flex-shrink-0">
@@ -124,28 +178,28 @@
         <i data-lucide="layers" class="w-3.5 h-3.5 text-terracotta-500"></i>
         <span class="hidden sm:inline">50 頁目錄</span>
       </button>
-      <button onclick="toggleFullScreen()" class="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-warm-200 bg-warm-50 hover:bg-white text-xs font-bold text-warm-800 transition shadow-sm" title="切換全螢幕 (F)">
-        <i data-lucide="maximize" class="w-3.5 h-3.5 text-warm-700" id="fullscreen-icon"></i>
-        <span class="hidden sm:inline" id="fullscreen-text">全螢幕</span>
+      <button onclick="toggleFullScreen()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-terracotta-500 hover:bg-terracotta-600 text-xs font-bold text-white transition shadow-sm" title="進入純滿版全螢幕 (F)">
+        <i data-lucide="maximize" class="w-3.5 h-3.5"></i>
+        <span>全螢幕播放</span>
       </button>
       <div class="h-4 w-px bg-warm-200 mx-0.5"></div>
       <span class="text-xs font-extrabold text-warm-800 tabular-nums px-1" id="page-counter">01 / 50</span>
     </div>
   </header>
 
-  <!-- 主幻燈片區域 (大字體、少字數、響應式自由滾動) -->
+  <!-- 主幻燈片區域 -->
   <main class="flex-1 w-full flex items-center justify-center p-3 sm:p-5 md:p-8" id="main-deck-area">
-    <div id="slide-wrapper" class="w-full max-w-5xl bg-white rounded-2xl md:rounded-3xl border border-warm-200 shadow-md p-5 sm:p-7 md:p-10 flex flex-col justify-between min-h-[500px] md:min-h-[600px] transition-all duration-200">
+    <div id="slide-wrapper" class="w-full max-w-6xl bg-white rounded-2xl md:rounded-3xl border border-warm-200 shadow-sm p-5 sm:p-7 md:p-10 flex flex-col justify-between min-h-[500px] md:min-h-[600px] transition-all duration-200">
       <!-- 內容由 JavaScript 動態渲染 -->
     </div>
   </main>
 
-  <!-- 底部固定控制列 (大按鈕，手機握持易點擊) -->
+  <!-- 底部固定控制列 (一般模式，全螢幕時隱藏) -->
   <footer class="w-full px-4 md:px-8 py-3 border-t border-warm-200 bg-white/95 backdrop-blur flex items-center justify-between text-xs text-warm-600 sticky bottom-0 z-40">
     <div class="hidden sm:flex items-center gap-3 text-warm-500 text-xs">
       <span class="flex items-center gap-1"><kbd class="px-2 py-0.5 bg-warm-100 border border-warm-200 rounded font-mono text-[11px]">←</kbd> <kbd class="px-2 py-0.5 bg-warm-100 border border-warm-200 rounded font-mono text-[11px]">→</kbd> 翻頁</span>
       <span>• 支援手機左右滑動螢幕</span>
-      <span>• 按 <kbd class="px-2 py-0.5 bg-warm-100 border border-warm-200 rounded font-mono text-[11px]">F</kbd> 全螢幕</span>
+      <span>• 按 <kbd class="px-2 py-0.5 bg-warm-100 border border-warm-200 rounded font-mono text-[11px]">F</kbd> 滿版全螢幕</span>
     </div>
     <div class="text-xs sm:hidden text-warm-500 font-semibold">
       👈 左右滑動螢幕翻頁 👉
@@ -159,6 +213,27 @@
       </button>
     </div>
   </footer>
+
+  <!-- ========================================= -->
+  <!-- 全螢幕專屬懸浮控制條 (零邊框滿版時浮動顯示) -->
+  <!-- ========================================= -->
+  <div id="fs-floating-bar" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 bg-warm-900/85 backdrop-blur-md text-white px-5 py-2.5 rounded-full shadow-2xl items-center gap-4 text-xs font-bold border border-warm-700/60">
+    <span class="text-warm-300 tabular-nums" id="fs-page-counter">01 / 50</span>
+    <div class="h-3.5 w-px bg-warm-700"></div>
+    <button onclick="prevSlide()" class="hover:text-terracotta-400 flex items-center gap-1 transition">
+      <i data-lucide="chevron-left" class="w-4 h-4"></i> 上一頁
+    </button>
+    <button onclick="nextSlide()" class="hover:text-terracotta-400 flex items-center gap-1 transition">
+      下一頁 <i data-lucide="chevron-right" class="w-4 h-4"></i>
+    </button>
+    <div class="h-3.5 w-px bg-warm-700"></div>
+    <button onclick="toggleDrawer()" class="hover:text-terracotta-400 flex items-center gap-1 transition">
+      <i data-lucide="layers" class="w-4 h-4"></i> 目錄
+    </button>
+    <button onclick="toggleFullScreen()" class="hover:text-terracotta-400 flex items-center gap-1 transition text-warm-300">
+      <i data-lucide="minimize" class="w-4 h-4"></i> 退出全螢幕 (Esc)
+    </button>
+  </div>
 
   <!-- 50 頁目錄彈出抽屜 -->
   <div id="drawer-backdrop" onclick="toggleDrawer(false)" class="fixed inset-0 bg-warm-900/40 backdrop-blur-sm z-50 hidden transition-opacity"></div>
@@ -182,27 +257,27 @@
   {
     "id": 1,
     "module": "模組 1 · 觀念躍升",
-    "badge": "課程導引 · 01/50",
+    "badge": "課程首頁 · 01/50",
     "title": "Agentic AI 自媒體電商應用",
-    "subtitle": "從手動操作員，躍升為指揮 AI 智能體的商業司令官",
+    "subtitle": "從手動操作員，躍升為指揮 AI Agent 團隊的商業司令官",
     "type": "hero",
     "data": {
       "tagline": "萬能科技大學 企業管理系 ｜ 授課教師：邱俊維 博士",
       "stats": [
         {
           "num": "1 人",
-          "label": "運營跨國電商團隊規模"
+          "label": "運營全方位電商團隊規模"
         },
         {
           "num": "24/7",
-          "label": "自主決策與全自動閉環"
+          "label": "自主決策與自動化整合流程"
         },
         {
           "num": "0 人力",
-          "label": "重複性繁瑣營運全接管"
+          "label": "繁瑣庶務與搬運全由 AI 接管"
         }
       ],
-      "coreConcept": "本課程全面聚焦「Agentic AI 自主智能體」在自媒體電商的實戰落地，帶你掌握一人打造自動運轉商業機器的核心方法！"
+      "coreConcept": "本課程全面聚焦「Agentic AI 自主代理人」在自媒體電商的實戰應用，掌握一人打造自動運轉商業系統的核心方法！"
     }
   },
   {
@@ -213,7 +288,7 @@
     "subtitle": "邱俊維 博士 ｜ 萬能科技大學 企業管理系 助理教授",
     "type": "profile_slide",
     "data": {
-      "insight": "以學術嚴謹度結合前瞻 Agentic AI 技術，賦能新世代自主商業實踐！",
+      "insight": "以學術嚴謹度結合前瞻 AI Agent 技術，強化新世代自主商業實踐！",
       "name": "邱俊維 博士",
       "title": "萬能科技大學 企業管理系 助理教授",
       "office": "育英樓 J801-1 研究室",
@@ -234,7 +309,7 @@
           "icon": "cpu",
           "title": "核心研究專長",
           "items": [
-            "AI 跨領域應用與 Agentic 智能體",
+            "AI 跨領域應用與 AI Agent 系統",
             "決策分析與作業研究",
             "智慧供應鏈與運籌管理",
             "全端系統架構與商業智慧 (BI)"
@@ -245,7 +320,7 @@
           "title": "課程核心宗旨",
           "items": [
             "不教死記操作，只教前沿商業思維",
-            "解構 AI Agent 如何自主串聯內容、選品、客服與訂單閉環，打造一人微型企業！"
+            "解析 AI Agent 如何自主串聯內容、選品、客服與訂單，打造一人微型企業！"
           ]
         }
       ]
@@ -255,25 +330,25 @@
     "id": 3,
     "module": "模組 1 · 觀念躍升",
     "badge": "核心本質 · 03/50",
-    "title": "傳統 AI vs Agentic AI",
-    "subtitle": "從「被動聊天機器人」到「主動完成目標的數位員工」",
+    "title": "傳統 AI vs Agentic AI (自主代理人)",
+    "subtitle": "從「被動聊天機器人」到「主動達成目標的數位員工」",
     "type": "comparison",
     "data": {
-      "insight": "傳統 AI 只是聽話的打字員；Agentic AI 是有目標、會看反饋、能自己修復問題的合夥人。",
+      "insight": "傳統 AI 只是聽話的打字員；Agentic AI 是有目標、會看反饋、能自己解決問題的數位合夥人。",
       "leftTitle": "傳統 AI (被動工具)",
       "leftBadge": "人推一下動一下",
       "leftPoints": [
         "人給提示詞 ➔ AI 產出一篇文案",
-        "不知道賣場庫存，無法聯動系統",
+        "不知道賣場庫存，無法串聯系統資料",
         "需要人類手動複製、貼上與發布",
-        "遇到錯誤直接卡住，缺乏反思能力"
+        "遇到錯誤直接停止，缺乏自主反思"
       ],
-      "rightTitle": "Agentic AI (自主智能體)",
-      "rightBadge": "目標驅動 · 自主閉環",
+      "rightTitle": "Agentic AI (AI Agent 代理人)",
+      "rightBadge": "目標驅動 · 自主執行",
       "rightPoints": [
-        "給予目標：『清空庫存剩 30 件的熱門包包』",
-        "自己查庫存 ➔ 分析競品 ➔ 產出文案",
-        "自動調用 API 發布貼文並監控互動熱度",
+        "給予目標：『清空庫存剩 30 件的熱銷包包』",
+        "自己查庫存 ➔ 分析競品 ➔ 產出最適文案",
+        "自動呼叫 API 發布社群貼文並監控互動熱度",
         "若轉化不佳，自動更換封面與促銷方案"
       ]
     }
@@ -281,18 +356,18 @@
   {
     "id": 4,
     "module": "模組 1 · 觀念躍升",
-    "badge": "架構解剖 · 04/50",
-    "title": "智能體 (Agent) 的四大核心器官",
-    "subtitle": "一個能替你賺錢的電商 Agent 必須具備這四種能力",
+    "badge": "架構解析 · 04/50",
+    "title": "AI Agent (代理人) 的四大核心器官",
+    "subtitle": "一個能替你自動運轉的電商 Agent 必須具備這四種能力",
     "type": "four_pillars",
     "data": {
-      "insight": "只有大腦（LLM）而沒有手腳（工具）和記憶的 AI，只是個會說空話的玩具。",
+      "insight": "只有大腦（LLM）而沒有手腳（工具）和記憶的 AI，只是個會說空話的文字工具。",
       "pillars": [
         {
           "icon": "eye",
           "name": "1. 感知 (Perception)",
           "color": "terracotta",
-          "detail": "全網監控社群熱搜、粉絲留言、競品調價與商城訂單。"
+          "detail": "全網監控社群熱搜、粉絲留言、競品價格與商城新訂單。"
         },
         {
           "icon": "brain",
@@ -304,13 +379,13 @@
           "icon": "database",
           "name": "3. 記憶 (Memory)",
           "color": "amberwood",
-          "detail": "記住品牌語氣、商品手冊知識庫、每位顧客歷史偏好。"
+          "detail": "記住品牌語氣、商品知識庫、每位顧客歷史偏好與詢問紀錄。"
         },
         {
           "icon": "wrench",
           "name": "4. 行動 (Action)",
           "color": "warm",
-          "detail": "調用外部 API：自動發文、修改價格、發送優惠券、安排出貨。"
+          "detail": "呼叫外部 API：自動發文、調整價格、發送優惠券、安排出貨。"
         }
       ]
     }
@@ -318,12 +393,12 @@
   {
     "id": 5,
     "module": "模組 1 · 觀念躍升",
-    "badge": "組織變革 · 05/50",
-    "title": "電商組織型態的典範轉移",
-    "subtitle": "一人 + Agent 艦隊，生產力正式碾壓中小型工作室",
+    "badge": "組織演進 · 05/50",
+    "title": "自媒體電商組織型態的典範轉移",
+    "subtitle": "一人 + AI Agent 艦隊，生產力正式超越十人工作室",
     "type": "stepper",
     "data": {
-      "insight": "未來的超級品牌，背後可能只有 1 個創辦人與數十個自主協同的 Agent。",
+      "insight": "未來的超級品牌，背後可能只有 1 個創辦人與數十個自主協同的 AI Agent。",
       "steps": [
         {
           "phase": "時代 1.0",
@@ -335,13 +410,13 @@
           "phase": "時代 2.0",
           "title": "AI 工具輔助",
           "tag": "半自動瓶頸",
-          "desc": "人用 ChatGPT 生文字、Midjourney 做圖，但人依然是複製貼上的瓶頸。"
+          "desc": "人用 ChatGPT 生文字、Midjourney 做圖，但人依然是複製貼上的最大瓶頸。"
         },
         {
           "phase": "時代 3.0",
-          "title": "Agentic 艦隊",
+          "title": "AI Agent 艦隊",
           "tag": "全自動自轉",
-          "desc": "創作者只負責審美把關與決策，其餘所有跨系統流程全部由 Agent 自主搞定！"
+          "desc": "創作者只負責審美把關與決策，跨系統流程全部由 AI Agent 自主搞定！"
         }
       ]
     }
@@ -349,30 +424,30 @@
   {
     "id": 6,
     "module": "模組 1 · 觀念躍升",
-    "badge": "商業地圖 · 06/50",
-    "title": "Agentic 電商系統全景四層架構",
-    "subtitle": "從流量到出貨，全自動協同的神經網路",
+    "badge": "商業架構 · 06/50",
+    "title": "Agentic 電商系統四層架構全景",
+    "subtitle": "從流量到出貨，全自動協同的數位神經網路",
     "type": "four_pillars",
     "data": {
-      "insight": "四層網絡無縫連通，數據即時流轉，打造不可複製的高效率商業壁壘。",
+      "insight": "四層架構無縫串聯，資料即時流轉，打造不可複製的高效率商業壁壘。",
       "pillars": [
         {
           "icon": "share-2",
           "name": "1. 內容流量層",
           "color": "terracotta",
-          "detail": "趨勢捕捉 ➔ 腳本生成 ➔ 影音合成 ➔ 跨平台全自動排程發布。"
+          "detail": "趨勢捕捉 ➔ 腳本生成 ➔ 影音合成 ➔ 跨平台自動排程發布。"
         },
         {
           "icon": "shopping-bag",
           "name": "2. 交易轉化層",
           "color": "sage",
-          "detail": "動態定價 ➔ 智能詳情頁 ➔ 私訊導購 ➔ 購物車遺棄主動挽回。"
+          "detail": "動態定價 ➔ 智慧商品頁 ➔ 私訊導購 ➔ 購物車未結帳主動挽回。"
         },
         {
           "icon": "box",
-          "name": "3. 供應履約層",
+          "name": "3. 供應鏈履約層",
           "color": "amberwood",
-          "detail": "按需訂製 POD ➔ 工廠比價 ➔ 自動派單 ➔ 即時物流異常預警。"
+          "detail": "按需印製 POD ➔ 工廠比價 ➔ 自動派單 ➔ 即時物流異常預警。"
         },
         {
           "icon": "compass",
@@ -391,17 +466,17 @@
     "subtitle": "固定成本趨近於零，享受高達 70%+ 的實質淨利率",
     "type": "comparison",
     "data": {
-      "insight": "商業史上第一次，個體戶可以擁有超越跨國企業級的數位營運基礎設施。",
+      "insight": "商業史上第一次，個人創業者可以擁有超越跨國企業級的自動化營運基礎設施。",
       "leftTitle": "傳統 10 人工作室財務結構",
       "leftBadge": "重負擔 · 脆弱抗風險",
       "leftPoints": [
         "辦公室租金、設備與水電：25%",
-        "團隊薪資、勞健保與溝通耗損：45%",
-        "人工作業出錯與退貨損失：10%",
+        "團隊薪資、勞健保與溝通損耗：45%",
+        "人工作業疏失與退貨損失：10%",
         "創辦人實質淨利潤率：僅剩 10% ~ 20%"
       ],
-      "rightTitle": "1 人 + Agentic 艦隊財務結構",
-      "rightBadge": "零包袱 · 指數增長",
+      "rightTitle": "1 人 + AI Agent 團隊財務結構",
+      "rightBadge": "極低固定支出 · 彈性擴張",
       "rightPoints": [
         "雲端工具訂閱與 LLM API 算力：< 8%",
         "第三方物流與按需印刷代工：15%",
@@ -418,13 +493,13 @@
     "subtitle": "把 95% 的繁瑣交給 AI，你只負責最後 5% 的靈魂點睛",
     "type": "four_pillars",
     "data": {
-      "insight": "你越懂得把手放開、讓 Agent 自主運轉，你的個人商業版圖就能擴展得越大。",
+      "insight": "你越懂得授權讓 AI Agent 自主運轉，你的個人商業版圖就能擴展得越廣大。",
       "pillars": [
         {
           "icon": "sparkles",
           "name": "1. 審美與價值觀把關",
           "color": "terracotta",
-          "detail": "定義品牌調性：高雅、極簡或幽默，AI 產出後只花 1 分鐘快速審閱批可。"
+          "detail": "定義品牌調性：高雅、極簡或幽默，AI 產出後只花 1 分鐘快速審閱核准。"
         },
         {
           "icon": "shield-check",
@@ -436,26 +511,26 @@
           "icon": "target",
           "name": "3. 旗艦戰略方向制定",
           "color": "amberwood",
-          "detail": "決定本月主打品類、尋找高利潤藍海市場、策劃病毒式傳播主題。"
+          "detail": "決定本月主打品類、尋找高利潤藍海市場、策劃社群話題傳播主軸。"
         },
         {
           "icon": "sliders",
-          "name": "4. Agent 艦隊效率考核",
+          "name": "4. AI Agent 效率考核",
           "color": "warm",
-          "detail": "定期檢視各 Agent 轉化率與算力成本，優化工作流，持續升級裝備。"
+          "detail": "定期檢視各 Agent 轉化率與算力成本，改善工作流，持續升級裝備。"
         }
       ]
     }
   },
   {
     "id": 9,
-    "module": "模組 2 · 流量 Agent 矩陣",
+    "module": "模組 2 · 流量 Agent 體系",
     "badge": "模組導言 · 09/50",
-    "title": "流量自動化引擎：內容 Agent 矩陣",
+    "title": "流量自動化引擎：內容 AI Agent 體系",
     "subtitle": "打造一座 24 小時不停自轉的內容水力發電廠",
     "type": "visual_matrix",
     "data": {
-      "insight": "在社交電商時代，流量不應該是手工業，而是一座精密自動化工廠。",
+      "insight": "在社群電商時代，流量不應該是手工業，而是一座精密自動化工廠。",
       "cards": [
         {
           "icon": "radar",
@@ -470,7 +545,7 @@
         {
           "icon": "film",
           "title": "影音生成 Agent",
-          "desc": "無人化流水線：自動配音、自動畫面合成與特效字幕。"
+          "desc": "自動化流水線：自動配音、自動畫面合成與特效字幕。"
         },
         {
           "icon": "share-2",
@@ -482,44 +557,44 @@
   },
   {
     "id": 10,
-    "module": "模組 2 · 流量 Agent 矩陣",
+    "module": "模組 2 · 流量 Agent 體系",
     "badge": "趨勢雷達 · 10/50",
     "title": "24/7 社群趨勢雷達 Agent (Trend Radar)",
     "subtitle": "比所有競品更早發現下一個爆款商機",
     "type": "stepper",
     "data": {
-      "insight": "不要盲目跟風，而是在熱浪剛形成的第一天就精準卡位。",
+      "insight": "不要盲目跟風，而是在熱潮剛形成的第一天就精準卡位。",
       "steps": [
         {
           "phase": "訊號捕捉",
           "title": "多平台熱搜實時監控",
           "tag": "自動抓取",
-          "desc": "定時掃描 TikTok、IG、小紅書熱門標籤與飆升關鍵詞。"
+          "desc": "定時掃描 TikTok、IG、YouTube Shorts 熱門標籤與飆升關鍵字。"
         },
         {
           "phase": "意圖過濾",
-          "title": "篩選商業購買意向",
+          "title": "篩選商業購買意願",
           "tag": "精準提煉",
           "desc": "自動過濾八卦娛樂，只鎖定『求代購』、『求連結』暴增的生活好物。"
         },
         {
           "phase": "靈感推播",
           "title": "推播企劃簡報到手機",
-          "tag": "晨間送達",
-          "desc": "清晨發送訊息：『發現 3 個熱門痛點，已備好對應商品與腳本大綱！』"
+          "tag": "清晨送達",
+          "desc": "每天發送訊息：『發現 3 個熱門痛點，已備好對應商品與腳本大綱！』"
         }
       ]
     }
   },
   {
     "id": 11,
-    "module": "模組 2 · 流量 Agent 矩陣",
+    "module": "模組 2 · 流量 Agent 體系",
     "badge": "文案工程 · 11/50",
     "title": "腳本編劇 Agent：高轉化心理學拆解",
-    "subtitle": "嚴格依據大腦多巴胺分泌規律排布的文案神經網絡",
+    "subtitle": "依據受眾心理節奏精準排布的結構化文案",
     "type": "four_pillars",
     "data": {
-      "insight": "爆款短影音不是文采的勝利，而是嚴格神經心理學架構的精準執行。",
+      "insight": "爆款短影音不是單靠文采，而是受眾心理學架構的精準執行。",
       "pillars": [
         {
           "icon": "zap",
@@ -531,13 +606,13 @@
           "icon": "flame",
           "name": "3-15 秒：矛盾升級",
           "color": "sage",
-          "detail": "展示傳統方法的失敗與挫折感，建立與觀眾強烈的情感同盟。"
+          "detail": "展示傳統方法的失敗與挫折感，建立與觀眾強烈的情感共鳴。"
         },
         {
           "icon": "sparkles",
           "name": "15-35 秒：救星登場",
           "color": "amberwood",
-          "detail": "直觀展示商品核心超能力，只聚焦一個最震撼的 Before / After 對比。"
+          "detail": "直觀展示商品核心功能，只聚焦一個最震撼的 Before / After 對比。"
         },
         {
           "icon": "arrow-up-right",
@@ -550,16 +625,16 @@
   },
   {
     "id": 12,
-    "module": "模組 2 · 流量 Agent 矩陣",
-    "badge": "影音管線 · 12/50",
-    "title": "多模態自動化影音流水線",
-    "subtitle": "腳本、語音、分鏡到渲染，90 秒無人化自動出片",
+    "module": "模組 2 · 流量 Agent 體系",
+    "badge": "影音流水線 · 12/50",
+    "title": "多模態自動化影音製作流水線",
+    "subtitle": "腳本、語音、分鏡到渲染，90 秒自動化出片",
     "type": "stepper",
     "data": {
       "insight": "多個專精 Agent 彼此傳遞參數，徹底告別傳統動輒半天的剪輯煎熬。",
       "steps": [
         {
-          "phase": "參數化腳本",
+          "phase": "結構化腳本",
           "title": "Script Agent 產出結構檔",
           "tag": "秒級生成",
           "desc": "標註每秒鏡頭描述、配音文字、大字報提示與音效觸發點。"
@@ -568,74 +643,74 @@
           "phase": "語音與視覺匹配",
           "title": "神經語音合成 + 畫面調用",
           "tag": "AI 生成",
-          "desc": "調用創作者聲紋克隆模型配音，並自動檢索或生成對應的高清畫面。"
+          "desc": "呼叫創作者聲紋克隆模型配音，並自動檢索或生成對應的高畫質畫面。"
         },
         {
-          "phase": "雲端代碼合成",
+          "phase": "雲端自動合成",
           "title": "自動對齊節奏渲染輸出",
-          "tag": "一鍵導出",
-          "desc": "雲端自動合成高畫質 9:16 短片，加上動態字幕，直接進入待審批佇列！"
+          "tag": "一鍵匯出",
+          "desc": "雲端自動合成 9:16 手機短影音，加上動態字幕，直接進入待審批清單！"
         }
       ]
     }
   },
   {
     "id": 13,
-    "module": "模組 2 · 流量 Agent 矩陣",
-    "badge": "跨界分發 · 13/50",
+    "module": "模組 2 · 流量 Agent 體系",
+    "badge": "跨平台分發 · 13/50",
     "title": "跨平台語境自適應「一魚多吃」Agent",
-    "subtitle": "同一條核心素材，自動換裝適配各大社群調性",
+    "subtitle": "同一條核心素材，自動重寫適配各大社群調性",
     "type": "visual_matrix",
     "data": {
-      "insight": "不要把同一篇文案生硬複製！懂社群生態的 Agent 會自動重寫語氣與標籤。",
+      "insight": "不要把同一篇文案生硬複製！懂社群生態的 Agent 會自動調整語氣與標籤。",
       "cards": [
         {
           "icon": "instagram",
           "title": "Instagram 模式",
-          "desc": "視覺美學優先、九宮格留白排版、精簡優雅文字、置入 15 個精選熱門標籤。"
+          "desc": "生活美學優先、留白排版、精簡優雅文字、置入 15 個精選熱門主題標籤。"
         },
         {
           "icon": "smartphone",
           "title": "TikTok / Reels 模式",
-          "desc": "快節奏、超大醒目粗體大字報、強烈爭議點提問、引導留言區激烈開火。"
+          "desc": "快節奏、超大醒目粗體大字報、強烈討論點提問、引發熱烈留言互動。"
         },
         {
           "icon": "book-open",
-          "title": "小紅書模式",
-          "desc": "真誠體驗筆記體：『姐妹們真的被拯救了！』、條列保姆級避坑乾貨。"
+          "title": "部落格 / 開箱筆記模式",
+          "desc": "真誠體驗手記：『實測一個月真實心得！』、條列式實用避坑教學。"
         },
         {
           "icon": "twitter",
           "title": "Threads / X 模式",
-          "desc": "觀點碎念流：一句精闢金句起手、引導討論展開、下附落地購買捷徑。"
+          "desc": "觀點短文流：一句精闢金句起手、引導討論展開、下附購買連結。"
         }
       ]
     }
   },
   {
     "id": 14,
-    "module": "模組 2 · 流量 Agent 矩陣",
+    "module": "模組 2 · 流量 Agent 體系",
     "badge": "社群轉化 · 14/50",
-    "title": "留言區神回覆與私訊導流 Agent",
-    "subtitle": "把每一次點讚，在 3 秒內轉化為購物車的潛在訂單",
+    "title": "留言區即時互動與私訊導流 Agent",
+    "subtitle": "把每一次社群點讚，在 3 秒內轉化為購物車的潛在訂單",
     "type": "stepper",
     "data": {
-      "insight": "留言區不是單純聊天的地方，而是最高轉化的私域漏斗入口。",
+      "insight": "留言區不是單純聊天的地方，而是最高轉化的私域銷售漏斗入口。",
       "steps": [
         {
-          "phase": "幽默神回覆",
+          "phase": "幽默即時回覆",
           "title": "秒回評論推升互動熱度",
-          "tag": "推升算法",
+          "tag": "推升演算法",
           "desc": "Agent 具備高情商，秒回趣味留言，推動演算法判定此篇貼文極具價值。"
         },
         {
           "phase": "意圖精準識別",
-          "title": "捕捉「想買」暗號",
-          "tag": "意向鎖定",
-          "desc": "偵測到『求連結』、『哪裡買』、『+1』，系統自動鎖定該用戶帳號。"
+          "title": "捕捉「想買」購買意願",
+          "tag": "意願鎖定",
+          "desc": "偵測到『求連結』、『哪裡買』、『+1』，系統自動鎖定該使用者帳號。"
         },
         {
-          "phase": "私訊一對一閉環",
+          "phase": "私訊一對一整合",
           "title": "專屬折扣與導購結帳",
           "tag": "瞬間收單",
           "desc": "私訊秒送：『嗨！看到你的留言了，這是你專屬的 9 折結帳車（免跳出直接買）！』"
@@ -645,13 +720,13 @@
   },
   {
     "id": 15,
-    "module": "模組 2 · 流量 Agent 矩陣",
-    "badge": "數位替身 · 15/50",
-    "title": "個人品牌數位分身 (Digital Twin) 矩陣",
+    "module": "模組 2 · 流量 Agent 體系",
+    "badge": "數位分身 · 15/50",
+    "title": "個人品牌數位分身 (Digital Twin) 體系",
     "subtitle": "讓 AI 替你出鏡與發聲，依然保持 100% 真人魅力",
     "type": "four_pillars",
     "data": {
-      "insight": "觀眾愛的是你的個人特色，只要錨定核心聲紋與形象，替身就是你的分身軍團。",
+      "insight": "受眾認同的是你的個人特色，只要錨定核心聲紋與形象，替身就是你的分身部隊。",
       "pillars": [
         {
           "icon": "user-check",
@@ -661,19 +736,19 @@
         },
         {
           "icon": "radio",
-          "name": "2. 聲紋特徵與語癖捕捉",
+          "name": "2. 聲紋特徵與語調捕捉",
           "color": "sage",
-          "detail": "保留個人標誌性口頭禪（如『老實說』、『注意看這個細節』），拒絕死板播報腔。"
+          "detail": "保留個人標誌性口頭禪（如『老實說』、『注意看這個細節』），拒絕死板機械音。"
         },
         {
           "icon": "book",
-          "name": "3. 價值觀知識庫硬約束",
+          "name": "3. 品牌價值觀知識庫約束",
           "color": "amberwood",
-          "detail": "Agent 牢記：不推廉價劣質品、堅持實測分享、立場親切幽默。"
+          "detail": "Agent 牢記：不推劣質品、堅持實測分享、立場親切幽默。"
         },
         {
           "icon": "shield",
-          "name": "4. 敏感話題防護紅線",
+          "name": "4. 敏感話題防護機制",
           "color": "warm",
           "detail": "政治、法律與不實醫療宣稱嚴格過濾，觸發紅線立即轉由人類人工審查。"
         }
@@ -682,56 +757,56 @@
   },
   {
     "id": 16,
-    "module": "模組 2 · 流量 Agent 矩陣",
-    "badge": "封面賽馬 · 16/50",
+    "module": "模組 2 · 流量 Agent 體系",
+    "badge": "動態測試 · 16/50",
     "title": "流量賽馬機制：標題與封面自動淘汰賽",
-    "subtitle": "讓真實數據自己決定哪一張封面能賺錢",
+    "subtitle": "讓真實資料自己決定哪一張封面能創造最佳收益",
     "type": "stepper",
     "data": {
       "insight": "不要主觀猜測哪張圖會紅！讓 Agent 在發布的前 60 分鐘內即時下注與淘汰劣者。",
       "steps": [
         {
           "phase": "生成 4 組候選",
-          "title": "不同情緒鉤子配對",
+          "title": "不同情緒切角配對",
           "tag": "多元組合",
-          "desc": "Agent 同時生成：焦慮痛點型、好奇型、極簡生活型、數字清單型 4 組封面標題。"
+          "desc": "Agent 同時生成：痛點型、好奇型、簡約生活型、數字清單型 4 組封面標題。"
         },
         {
           "phase": "小流量測試",
           "title": "首波推播給 10% 受眾",
-          "tag": "實時監控",
+          "tag": "即時監控",
           "desc": "監控前 30 分鐘點擊率 (CTR) 與完播率，標記表現最佳的冠軍版本。"
         },
         {
-          "phase": "全面覆蓋覆寫",
+          "phase": "全面替換覆蓋",
           "title": "自動替換獲勝版本",
           "tag": "效益最大化",
-          "desc": "自動調用 API 將所有貼文封面替換為冠軍版本，吃滿後續長尾流量！"
+          "desc": "自動呼叫 API 將所有貼文封面替換為冠軍版本，吃滿後續長尾流量！"
         }
       ]
     }
   },
   {
     "id": 17,
-    "module": "模組 2 · 流量 Agent 矩陣",
+    "module": "模組 2 · 流量 Agent 體系",
     "badge": "產能對決 · 17/50",
-    "title": "純人工自媒體 vs Agentic 矩陣週產能",
-    "subtitle": "十倍以上的產能差距，徹底顛覆個人商業競局",
+    "title": "純人工自媒體 vs AI Agent 體系週產能",
+    "subtitle": "十倍以上的產能差距，徹底翻轉個人商業競局",
     "type": "comparison",
     "data": {
-      "insight": "當競品每週只能艱難擠出 2 篇普通貼文時，你的矩陣已經完成 20 篇高轉化測試。",
+      "insight": "當競品每週只能艱難擠出 2 篇普通貼文時，你的系統已經完成 20 篇高轉化測試。",
       "leftTitle": "傳統個人自媒體 (產能極限)",
       "leftBadge": "體力透支 · 難以擴張",
       "leftPoints": [
         "短影音創作：每週 2 ~ 3 支 (心力交瘁)",
         "多平台貼文：每週 3 ~ 4 篇 (無法兼顧)",
-        "私訊留言回覆率：僅 30% (晚回錯失掉單)",
+        "私訊留言回覆率：僅 30% (晚回錯失訂單)",
         "創作卡關週期：平均每兩週陷入靈感枯竭"
       ],
-      "rightTitle": "1 人 + Agentic 矩陣 (常態運轉)",
+      "rightTitle": "1 人 + AI Agent 體系 (常態運轉)",
       "rightBadge": "自動裂變 · 邊界無限",
       "rightPoints": [
-        "短影音創作：每週 15 ~ 25 支 (多視角剪裁)",
+        "短影音創作：每週 15 ~ 25 支 (多視角剪輯)",
         "全網圖文矩陣：每週 40+ 篇多語境版本",
         "私訊留言回覆率：98.5% 即時全覆蓋",
         "熱點選題捕捉：每日全自動掃描 200+ 素材"
@@ -740,10 +815,10 @@
   },
   {
     "id": 18,
-    "module": "模組 2 · 流量 Agent 矩陣",
+    "module": "模組 2 · 流量 Agent 體系",
     "badge": "模組總結 · 18/50",
-    "title": "圖解：社群自動化發射台端到端管線",
-    "subtitle": "創作者每週只需 30 分鐘批可，整週內容滿格推進",
+    "title": "圖解：社群自動化發射台端到端流程",
+    "subtitle": "創作者每週只需 30 分鐘核准，整週內容滿格推進",
     "type": "flow_chart",
     "data": {
       "insight": "發射台一旦建置完成，內容生產不再是苦差事，而是穩定輸出的商業引擎。",
@@ -770,12 +845,12 @@
         },
         {
           "step": "05",
-          "name": "全平台多語境分發",
+          "name": "多平台自動分發",
           "desc": "自動排程發送"
         },
         {
           "step": "06",
-          "name": "私訊導購閉環",
+          "name": "私訊導購流程",
           "desc": "自動引導結帳收單"
         }
       ]
@@ -789,7 +864,7 @@
     "subtitle": "把 20 人的繁瑣電商後台，收斂為一套自主神經系統",
     "type": "visual_matrix",
     "data": {
-      "insight": "最好的電商營運，是你去度假時，店鋪依然在自主根據匯率與競品調整策略。",
+      "insight": "最好的電商營運，是你去度假時，店鋪依然在自主根據市場反饋調整策略。",
       "cards": [
         {
           "icon": "trending-up",
@@ -799,12 +874,12 @@
         {
           "icon": "package",
           "title": "無庫存 POD Agent",
-          "desc": "顧客下單才印製，自動對接代工廠製造與直發。"
+          "desc": "顧客下單才印製，自動串接代工廠製造與直接出貨。"
         },
         {
           "icon": "dollar-sign",
           "title": "動態定價 Agent",
-          "desc": "基於庫存消耗速度與競品價格，實時浮動調整最佳毛利。"
+          "desc": "基於庫存去化速度與競品價格，即時浮動調整最佳毛利。"
         },
         {
           "icon": "heart",
@@ -818,7 +893,7 @@
     "id": 20,
     "module": "模組 3 · 無人電商營運",
     "badge": "爆款選品 · 20/50",
-    "title": "選品預測 Agent：告別拍腦袋選品",
+    "title": "選品預測 Agent：告別主觀猜測",
     "subtitle": "用社群情緒指數與供應鏈數據計算爆款勝率",
     "type": "four_pillars",
     "data": {
@@ -834,19 +909,19 @@
           "icon": "search",
           "name": "2. 競品差評切入盲點",
           "color": "sage",
-          "detail": "爬梳競品負評：找出『包裝易破』、『不易清洗』等痛點，針對性改良升級。"
+          "detail": "爬梳競品負評：找出『包裝易破損』、『不易清洗』等痛點，針對性改良升級。"
         },
         {
           "icon": "calculator",
           "name": "3. 極限毛利試算模型",
           "color": "amberwood",
-          "detail": "出廠價 + 物流 + 金流手續費 + 廣告預期成本，確保毛利率始終 ≥ 65%。"
+          "detail": "出廠價 + 運費 + 金流手續費 + 廣告預期成本，確保毛利率始終 ≥ 65%。"
         },
         {
           "icon": "shield-check",
-          "name": "4. 排除易損與尺碼雷區",
+          "name": "4. 排除易損與高退貨品類",
           "color": "warm",
-          "detail": "避開退貨率高的服飾女鞋，優先鎖定生活美學、儀式感與配件類標品。"
+          "detail": "避開退貨率高的尺碼敏感服飾，優先鎖定生活風格、儀式感與配件類標品。"
         }
       ]
     }
@@ -855,11 +930,11 @@
     "id": 21,
     "module": "模組 3 · 無人電商營運",
     "badge": "零庫存供應 · 21/50",
-    "title": "按需訂製 (POD) 零庫存供應鏈對接",
+    "title": "按需印製 (POD) 零庫存供應鏈串聯",
     "subtitle": "顧客付款才印製，Agent 自動派單代工廠發貨",
     "type": "stepper",
     "data": {
-      "insight": "個人電商最優解：把庫存風險甩給供應鏈，自己只賺品牌溢價與設計費。",
+      "insight": "個人電商最優解：把庫存風險移轉給供應鏈，自己只賺品牌溢價與設計費。",
       "steps": [
         {
           "phase": "話題印花即刻生成",
@@ -869,7 +944,7 @@
         },
         {
           "phase": "虛擬樣品 Mockup",
-          "title": "自動合成真實模特上身照",
+          "title": "自動合成真實情境展示圖",
           "tag": "零樣品成本",
           "desc": "將印花貼至馬克杯、T恤、托特包 3D 模型，一秒產出高質感商品主圖。"
         },
@@ -885,22 +960,22 @@
   {
     "id": 22,
     "module": "模組 3 · 無人電商營運",
-    "badge": "詳情頁生成 · 22/50",
-    "title": "高轉化產品詳情頁生成神經網絡",
+    "badge": "商品頁生成 · 22/50",
+    "title": "高轉化產品介紹頁生成系統",
     "subtitle": "讓每一吋版面都針對消費者的購買心理精準開火",
     "type": "visual_matrix",
     "data": {
-      "insight": "平庸的詳情頁只列冰冷參數；高轉換詳情頁在對消費者的身份認同深度共鳴。",
+      "insight": "平庸的介紹頁只列冰冷規格；高轉換介紹頁在對消費者的生活痛點深度共鳴。",
       "cards": [
         {
           "icon": "sparkles",
           "title": "痛點情境對比圖",
-          "desc": "首屏呈現使用前狼狽 vs 使用後優雅的清晰視覺對比。"
+          "desc": "首屏呈現使用前困擾 vs 使用後優雅的清晰視覺對比。"
         },
         {
           "icon": "shield",
           "title": "信任增強徽章",
-          "desc": "動態嵌入『30天滿意保證』、『天然有機認證』等信任標籤。"
+          "desc": "動態嵌入『30 天滿意保證』、『天然有機認證』等信任標籤。"
         },
         {
           "icon": "help-circle",
@@ -909,7 +984,7 @@
         },
         {
           "icon": "gift",
-          "title": "智能交叉加購推薦",
+          "title": "智慧交叉加購推薦",
           "desc": "在加入購物車下方動態呈現高毛利互補品：『加購現省 $150』。"
         }
       ]
@@ -920,7 +995,7 @@
     "module": "模組 3 · 無人電商營運",
     "badge": "動態定價 · 23/50",
     "title": "動態彈性定價與競品追蹤 Agent",
-    "subtitle": "像航空公司機票般智能調價：最大化每單利潤",
+    "subtitle": "像航空公司機票般智慧調價：最大化每單利潤",
     "type": "four_pillars",
     "data": {
       "insight": "固定價格是電商最大的利潤浪費。不同時段、不同流量，買家支付意願完全不同。",
@@ -933,21 +1008,21 @@
         },
         {
           "icon": "shield",
-          "name": "競品削價防守",
+          "name": "競品促銷防守",
           "color": "sage",
-          "detail": "競品降價時不打流血戰，改為『加贈獨家數位贈品』守住品牌調性。"
+          "detail": "競品降價時不打流血戰，改為『加贈獨家數位手冊』守住品牌調性。"
         },
         {
           "icon": "moon",
           "name": "夜間清倉促動",
           "color": "amberwood",
-          "detail": "針對停留超過 3 分鐘未結帳用戶，彈出限時 2 小時專屬夜間折扣碼。"
+          "detail": "針對停留超過 3 分鐘未結帳的使用者，彈出限時 2 小時專屬夜間折扣碼。"
         },
         {
           "icon": "sliders",
           "name": "毛利硬約束紅線",
           "color": "warm",
-          "detail": "嚴格設定最低利潤底線，任何促銷絕不低於毛利 40%，杜絕虧本賣。"
+          "detail": "嚴格設定最低利潤底線，任何促銷絕不低於毛利 40%，杜絕虧本銷售。"
         }
       ]
     }
@@ -955,21 +1030,21 @@
   {
     "id": 24,
     "module": "模組 3 · 無人電商營運",
-    "badge": "情感客服 · 24/50",
-    "title": "情感共鳴客服 Agent：告別死板關鍵字機器人",
+    "badge": "智慧客服 · 24/50",
+    "title": "共情客服 Agent：告別死板關鍵字回覆",
     "subtitle": "具備上下文理解與高情商促單的頂級銷售專家",
     "type": "comparison",
     "data": {
       "insight": "傳統客服只會回答『請稍候』；Agentic 導購能聽懂顧客的猶豫並臨門一腳促成交易。",
       "leftTitle": "傳統關鍵字機器人",
-      "leftBadge": "冰冷死板 · 趕走客人",
+      "leftBadge": "冰冷死板 · 錯失買家",
       "leftPoints": [
         "客：『這款保溫杯能放進隨身托特包嗎？』",
-        "Bot 回：『本店發貨時間為 48 小時內。』",
+        "Bot 回：『本店出貨時間為 48 小時內。』",
         "無視客人真實生活情境，缺乏多輪記憶",
-        "顧客失去耐心，直接關閉網頁前往別處下單"
+        "顧客失去耐心，直接關閉網頁前往別處購買"
       ],
-      "rightTitle": "Agentic 情感導購 Agent",
+      "rightTitle": "Agentic 共情導購 Agent",
       "rightBadge": "同理心 · 情境推演 · 促單成交",
       "rightPoints": [
         "自動讀取商品 3D 尺寸數據（高 18cm、直徑 6.5cm）",
@@ -983,26 +1058,26 @@
     "id": 25,
     "module": "模組 3 · 無人電商營運",
     "badge": "購物車挽回 · 25/50",
-    "title": "購物車遺棄喚醒智能體",
+    "title": "購物車未結帳喚醒智慧代理人",
     "subtitle": "將高達 70% 溜走的訂單，透過個人化心理學追回",
     "type": "stepper",
     "data": {
       "insight": "多數人放棄購物車不是不買，而是被打斷或對運費有些微猶豫。",
       "steps": [
         {
-          "phase": "遺棄後 30 分鐘",
+          "phase": "未結帳 30 分鐘",
           "title": "善意提醒保留中",
           "tag": "非推銷感",
-          "desc": "發送簡短訊息：『嗨！我們幫你保留了剛剛選的好物，怕被搶光，幫你留 2 小時喔！』"
+          "desc": "發送簡短訊息：『嗨！我們幫你保留了剛剛選的好物，怕被搶光，幫你保留 2 小時喔！』"
         },
         {
-          "phase": "遺棄後 4 小時",
+          "phase": "未結帳 4 小時",
           "title": "消除最後心理障礙",
           "tag": "專屬誘因",
-          "desc": "讀取購物車發現運費為 $60，自動發放：『專屬免運神券，只限今天結帳使用。』"
+          "desc": "讀取購物車發現運費為 $60，自動發放：『專屬免運優惠，只限今天結帳使用。』"
         },
         {
-          "phase": "遺棄後 24 小時",
+          "phase": "未結帳 24 小時",
           "title": "真實口碑催化",
           "tag": "社會認同",
           "desc": "推播同一款商品真實顧客的好評照片與實拍心得，成功挽回 35% 流失訂單！"
@@ -1014,23 +1089,23 @@
     "id": 26,
     "module": "模組 3 · 無人電商營運",
     "badge": "履約售後 · 26/50",
-    "title": "智能履約調度與售後預審 Agent",
+    "title": "智慧履約調度與售後預審 Agent",
     "subtitle": "把最繁雜的物流售後，變成提升忠誠度的驚喜時刻",
     "type": "four_pillars",
     "data": {
-      "insight": "優雅的售後處理不是成本中心，而是帶來 50% 復購率的超級槓桿。",
+      "insight": "優雅的售後處理不是成本中心，而是帶來 50% 回購率的超級槓桿。",
       "pillars": [
         {
           "icon": "map-pin",
           "name": "1. 物流異常主動預警",
           "color": "terracotta",
-          "detail": "包裹滯留超 48 小時，Agent 比客人更早發現，主動發訊致歉並催件。"
+          "detail": "包裹滯留超 48 小時，Agent 比客人更早發現，主動發訊致歉並追蹤進度。"
         },
         {
           "icon": "camera",
           "name": "2. 瑕疵照片視覺辨識",
           "color": "sage",
-          "detail": "客人上傳瑕疵照，視覺模型 3 秒辨識破損真實性，自動發起補發。"
+          "detail": "客人上傳瑕疵照，視覺模型 3 秒辨識破損真實性，自動發起補發新件。"
         },
         {
           "icon": "refresh-cw",
@@ -1040,7 +1115,7 @@
         },
         {
           "icon": "package",
-          "name": "4. 智能補貨水位警報",
+          "name": "4. 智慧補貨水位警報",
           "color": "warm",
           "detail": "依據近期熱度與物流週期，提早 14 天向代工廠預警追加，永不缺貨。"
         }
@@ -1050,8 +1125,8 @@
   {
     "id": 27,
     "module": "模組 3 · 無人電商營運",
-    "badge": "用戶終身價值 · 27/50",
-    "title": "基於 LTV 用戶生命週期的私域會員運營",
+    "badge": "顧客終身價值 · 27/50",
+    "title": "基於 LTV 顧客生命週期的會員經營",
     "subtitle": "千人千面：為每位顧客打造專屬的品牌儀式感",
     "type": "visual_matrix",
     "data": {
@@ -1060,22 +1135,22 @@
         {
           "icon": "user-plus",
           "title": "首購顧客 (Day 1 - 7)",
-          "desc": "發送防呆使用秘笈影片，確保第一次體驗完美，杜絕抱怨。"
+          "desc": "發送使用說明短片，確保第一次體驗完美，預防疑慮。"
         },
         {
           "icon": "heart",
           "title": "好感顧客 (Day 14 - 30)",
-          "desc": "產品預計消耗完前 3 天貼心提醒：『香氛蠟燭快見底囉！老友享 8 折回購。』"
+          "desc": "商品預計消耗完前 3 天貼心提醒：『香氛蠟燭快用完囉！老友享 8 折回購。』"
         },
         {
           "icon": "crown",
           "title": "高價值 VIP 顧客",
-          "desc": "新產品免費樣品搶先體驗，徵集回饋打造極致榮譽感與歸屬感。"
+          "desc": "新商品免費樣品搶先體驗，徵集回饋打造極致榮譽感與歸屬感。"
         },
         {
           "icon": "coffee",
           "title": "沉睡顧客 (無互動 > 60天)",
-          "desc": "創作者親切口吻關心：『好久沒見到你了，為你準備了一杯虛擬咖啡小禮物！』"
+          "desc": "創作者親切口吻關心：『好久沒見到你了，為你準備了一份專屬回饋禮！』"
         }
       ]
     }
@@ -1084,15 +1159,15 @@
     "id": 28,
     "module": "模組 3 · 無人電商營運",
     "badge": "模組總結 · 28/50",
-    "title": "圖解：無人電商前台到後台自主協同閉環",
-    "subtitle": "全流程自適應協同，打造真正躺著運轉的個人商業機器",
+    "title": "圖解：無人電商前台到後台自主整合流程",
+    "subtitle": "全流程自適應協同，打造真正自動運轉的個人商業系統",
     "type": "flow_chart",
     "data": {
-      "insight": "每一個環節都不再是孤島，全流程自適應協同，讓一人商業實現完全自主閉環。",
+      "insight": "每一個環節都不再是孤島，全流程自適應協同，讓一人商業實現完全自主運轉。",
       "flow": [
         {
           "step": "01",
-          "name": "趨勢動能選品",
+          "name": "趨勢選品",
           "desc": "鎖定高勝率毛利品"
         },
         {
@@ -1102,7 +1177,7 @@
         },
         {
           "step": "03",
-          "name": "高轉化詳情頁",
+          "name": "高轉化商品頁",
           "desc": "心理學導航上架"
         },
         {
@@ -1154,7 +1229,7 @@
     "module": "模組 4 · 一日實戰工作流",
     "badge": "晨間情報 · 30/50",
     "title": "07:30 晨間決策簡報 (Morning Digest)",
-    "subtitle": "泡一杯咖啡，在手機 Telegram 上瀏覽昨夜戰情報告",
+    "subtitle": "泡一杯咖啡，在手機 Telegram 上瀏覽昨夜營運摘要",
     "type": "visual_matrix",
     "data": {
       "insight": "不用打開 5 個複雜後台，Agent 已將所有重要情報濃縮為三張直觀卡片。",
@@ -1162,12 +1237,12 @@
         {
           "icon": "dollar-sign",
           "title": "昨夜銷售與毛利",
-          "desc": "營業額 $3,450、淨利潤 $2,280 (毛利率 66%)，主力爆款為『亞麻簡約托特包』。"
+          "desc": "營業額 $3,450、淨利潤 $2,280 (毛利率 66%)，主力熱銷款為『亞麻簡約托特包』。"
         },
         {
           "icon": "flame",
           "title": "社群流量波動警報",
-          "desc": "昨晚 21:00 發布的短片播放量突破 6.2 萬，帶動店鋪訪客激增 350%。"
+          "desc": "昨晚 21:00 發布的短影音播放量突破 6.2 萬，帶動店鋪訪客激增 350%。"
         },
         {
           "icon": "alert-triangle",
@@ -1191,7 +1266,7 @@
           "phase": "審閱候選內容",
           "title": "今日 3 篇社群短影音與貼文",
           "tag": "耗時 5 分鐘",
-          "desc": "在手機介面上快速滑過，確認無違背品牌核心價值觀的詞彙。"
+          "desc": "在手機介面上快速檢視，確認無違背品牌核心價值觀的用語。"
         },
         {
           "phase": "注入個人靈魂",
@@ -1200,7 +1275,7 @@
           "desc": "隨手加上今早散步時看到的一幕生活感悟，賦予機器文案真實溫度。"
         },
         {
-          "phase": "一鍵確認發射",
+          "phase": "一鍵確認發布",
           "title": "點擊核准全網自動排程",
           "tag": "耗時 10 秒",
           "desc": "點擊『Approve All』，分發 Agent 依各大社群最佳流量時間自主推播！"
@@ -1216,13 +1291,13 @@
     "subtitle": "傳統電商需要 2 週的工作量，Agentic 流程只需半小時",
     "type": "stepper",
     "data": {
-      "insight": "網路迷因與話題爆紅的生命週期只有 72 小時。只有 Agentic 速度才能吃滿紅利。",
+      "insight": "網路話題爆紅的生命週期通常很短。只有 Agentic 速度才能即時掌握商機。",
       "steps": [
         {
           "phase": "話題鎖定 (14:00)",
-          "title": "熱搜寵物迷因鎖定",
+          "title": "熱搜萌寵話題鎖定",
           "tag": "靈感捕捉",
-          "desc": "社群熱議厭世貓咪話題，Agent 分析適合印製在陶瓷杯與帆布袋上。"
+          "desc": "社群熱議生活療癒話題，Agent 分析適合印製在陶瓷杯與帆布袋上。"
         },
         {
           "phase": "資產生成 (14:15)",
@@ -1232,7 +1307,7 @@
         },
         {
           "phase": "全網開賣 (14:30)",
-          "title": "店鋪詳情頁與短影片同步上線",
+          "title": "店鋪商品頁與短片同步上線",
           "tag": "開始收單",
           "desc": "圖文、價格與結帳連結自動生成並同步發布，第一批訂單已經湧入！"
         }
@@ -1243,17 +1318,17 @@
     "id": 33,
     "module": "模組 4 · 一日實戰工作流",
     "badge": "智慧控盤 · 33/50",
-    "title": "19:00 電商帶貨的 AI 智慧副駕駛 (Copilot)",
-    "subtitle": "你在鏡頭前侃侃而談，Agent 在幕後充當全能控盤助理",
+    "title": "19:00 電商即時銷售的 AI 智慧副駕駛 (Copilot)",
+    "subtitle": "創作者專心介紹好物，Agent 在幕後充當全能助理",
     "type": "four_pillars",
     "data": {
-      "insight": "不用再請 3 個現場助理：一個副駕駛 Agent 能搞定提詞、彈幕控評與庫存彈窗。",
+      "insight": "不用再請多位現場助理：一個副駕駛 Agent 能搞定提詞、留言整理與庫存提醒。",
       "pillars": [
         {
           "icon": "tv",
-          "name": "1. 彈幕問題即時歸納",
+          "name": "1. 留言疑問即時歸納",
           "color": "terracotta",
-          "detail": "即時歸納觀眾疑惑：『很多人問 160cm 穿 M 會不會太大』，在提詞螢幕高亮提醒主播。"
+          "detail": "即時歸納觀眾疑惑：『很多人問 160cm 穿 M 會不會太大』，在螢幕高亮提醒主播。"
         },
         {
           "icon": "percent",
@@ -1263,15 +1338,15 @@
         },
         {
           "icon": "shield-alert",
-          "name": "3. 惡意酸民自動淨化",
+          "name": "3. 惡意洗版自動淨化",
           "color": "amberwood",
-          "detail": "自動過濾惡意洗版與敏感詞彙，維持直播間優雅舒適的購買氛圍。"
+          "detail": "自動過濾惡意留言與不當詞彙，維持直播與社群優雅舒適的購買氛圍。"
         },
         {
           "icon": "scissors",
-          "name": "4. 高光片段自動剪輯",
+          "name": "4. 精華片段自動剪輯",
           "color": "warm",
-          "detail": "直播結束後 10 分鐘，自動將精彩介紹切片加好字幕作為明日的精華 Short 發布。"
+          "detail": "結束後 10 分鐘，自動將精彩介紹切片加好字幕作為明日的精華短影音發布。"
         }
       ]
     }
@@ -1279,27 +1354,27 @@
   {
     "id": 34,
     "module": "模組 4 · 一日實戰工作流",
-    "badge": "夜間閉環 · 34/50",
-    "title": "23:00 自動對帳、ROI 踩煞車與次日規劃",
-    "subtitle": "當你沉入夢鄉，自主系統正在為明天的戰鬥排兵布陣",
+    "badge": "夜間運作 · 34/50",
+    "title": "23:00 自動對帳、ROI 踩煞車與次日排程",
+    "subtitle": "當你休息就寢，自主系統正在為明天的營運排兵布陣",
     "type": "visual_matrix",
     "data": {
-      "insight": "不會有睡醒發現廣告費被燒光的悲劇，Agent 是最嚴謹的財務看門狗。",
+      "insight": "不會有睡醒發現廣告費被超支的悲劇，Agent 是最嚴謹的財務守門員。",
       "cards": [
         {
           "icon": "trending-down",
-          "title": "廣告投放智能停損",
+          "title": "廣告投放智慧停損",
           "desc": "若某組廣告 ROAS 低於 2.0 超過 3 小時，自動暫停廣告組，杜絕無謂浪費。"
         },
         {
           "icon": "bar-chart-2",
           "title": "財務損益自動對帳",
-          "desc": "整合金流、物流發票與代工費，自動產出乾淨清晰的即時損益表。"
+          "desc": "整合金流、物流運費與代工費，自動產出乾淨清晰的即時損益表。"
         },
         {
           "icon": "calendar",
           "title": "明晨任務預先排程",
-          "desc": "趨勢 Agent 繼續在深海抓取全網訊息，並將明日待審批任務準備妥當。"
+          "desc": "趨勢 Agent 繼續在深海抓取全網訊息，並將明日待核准任務準備妥當。"
         }
       ]
     }
@@ -1318,25 +1393,25 @@
           "icon": "shield-alert",
           "name": "1. 資金操作熔斷鎖",
           "color": "terracotta",
-          "detail": "單筆折扣超 30% 或廣告單日加碼超 $200，必須強制手機二次認證。"
+          "detail": "單筆折扣超 30% 或廣告單日加碼超 $200，必須強制手機二次驗證。"
         },
         {
           "icon": "file-lock",
           "name": "2. 客戶個資自動遮蔽",
           "color": "sage",
-          "detail": "客戶姓名、電話、信用卡在送入 AI 前自動進行脫敏遮蔽處理。"
+          "detail": "客戶姓名、電話、信用卡在送入 AI 前自動進行去識別化遮蔽處理。"
         },
         {
           "icon": "refresh-ccw",
           "name": "3. 斷線一鍵降級備用",
           "color": "amberwood",
-          "detail": "若 API 發生斷線超時，平滑降級為標準靜態頁，確保前台購物不中斷。"
+          "detail": "若 API 發生斷線逾時，平滑降級為標準靜態頁，確保前台購物不中斷。"
         },
         {
           "icon": "history",
-          "name": "4. 完整操作審計日誌",
+          "name": "4. 完整操作稽核紀錄",
           "color": "warm",
-          "detail": "每一筆 Agent 的思考過程與 API 調用全部留存紀錄，隨時可追溯排查。"
+          "detail": "每一筆 Agent 的思考過程與 API 呼叫全部留存紀錄，隨時可追溯排查。"
         }
       ]
     }
@@ -1345,26 +1420,26 @@
     "id": 36,
     "module": "模組 4 · 一日實戰工作流",
     "badge": "模組總結 · 36/50",
-    "title": "創辦人精力分配的終極倒轉",
+    "title": "創辦人精力分配的終極翻轉",
     "subtitle": "從被日常瑣碎壓垮，到專注高槓桿核心價值",
     "type": "comparison",
     "data": {
-      "insight": "這不只是收入的增加，更是真正奪回生活的掌控權與思想的自由。",
-      "leftTitle": "傳統個體戶的時間黑洞",
+      "insight": "這不只是營收的增加，更是真正奪回生活的掌控權與思想的自由。",
+      "leftTitle": "傳統個人經營者的時間黑洞",
       "leftBadge": "瑣碎耗竭 · 產能受限",
       "leftPoints": [
         "剪輯短影音、做海報、排版：40%",
-        "回覆客服私訊、催物流包裹：30%",
+        "回覆客服私訊、追蹤物流包裹：30%",
         "打包商品、對帳發票、改價格：20%",
         "思考品牌長期策略與新選品：僅剩 10%"
       ],
-      "rightTitle": "Agentic 司令官的黃金配置",
+      "rightTitle": "AI Agent 司令官的黃金配置",
       "rightBadge": "高槓桿決策 · 自由奔放",
       "rightPoints": [
         "真實生活體驗與靈感汲取：40%",
         "深度審視選品方向與品牌價值：30%",
         "與忠實粉絲深度交流與社群互動：20%",
-        "審批 AI 工作成果與優化 Prompt：10%"
+        "審核 AI 工作成果與改善 Prompt：10%"
       ]
     }
   },
@@ -1372,30 +1447,30 @@
     "id": 37,
     "module": "模組 5 · 技術與工具鏈",
     "badge": "模組導言 · 37/50",
-    "title": "打開黑盒子：電商 Agent 的技術積木",
-    "subtitle": "不懂寫代碼也能掌握的現代智能體系統架構",
+    "title": "解密核心：電商 AI Agent 的技術積木",
+    "subtitle": "不懂寫程式也能掌握的現代智慧代理人系統架構",
     "type": "visual_matrix",
     "data": {
-      "insight": "最優秀的商業大腦，不是最會寫代碼的人，而是最懂得把 AI 積木拼接成盈利機器的人。",
+      "insight": "最優秀的商業大腦，不是最會寫程式碼的人，而是最懂得把 AI 積木拼接成盈利系統的人。",
       "cards": [
         {
           "icon": "git-branch",
-          "title": "多智能體協同 (Multi-Agent)",
+          "title": "多代理人協同 (Multi-Agent)",
           "desc": "主管 Agent 派工，專業工兵 Agent 分頭執行的分工模式。"
         },
         {
           "icon": "database",
           "title": "RAG 品牌記憶庫",
-          "desc": "給 AI 一本品牌專屬聖經，徹底根絕胡言亂語的幻覺。"
+          "desc": "給 AI 一本品牌專屬指南手冊，徹底根絕亂編事實的風險。"
         },
         {
           "icon": "wrench",
-          "title": "Function Calling (工具調用)",
-          "desc": "讓 AI 長出手腳，能真正打開系統點擊按鈕、修改資料。"
+          "title": "Function Calling (工具呼叫)",
+          "desc": "讓 AI 長出手腳，能真正串接系統點擊按鈕、修改資料。"
         },
         {
           "icon": "layers",
-          "title": "無代碼工作流整合",
+          "title": "無程式碼工作流整合",
           "desc": "用視覺化連線把社群、商城與金流全部串在一起。"
         }
       ]
@@ -1406,7 +1481,7 @@
     "module": "模組 5 · 技術與工具鏈",
     "badge": "協同模式 · 38/50",
     "title": "主管-工兵模式 (Supervisor-Worker Pattern)",
-    "subtitle": "專業分工：讓專門調校的工兵 Agent 處理專門的事",
+    "subtitle": "專業分工：讓專職訓練的工兵 Agent 處理專門的事",
     "type": "four_pillars",
     "data": {
       "insight": "不要試圖讓一個通用 AI 既懂寫詩又懂算帳。專業的事，交給專職工兵 Agent。",
@@ -1415,13 +1490,13 @@
           "icon": "crown",
           "name": "主管 Agent (Supervisor)",
           "color": "terracotta",
-          "detail": "拆解大目標、指派子任務給各工兵、整合產出並給出最終報告。"
+          "detail": "拆解大目標、指派子任務給各工兵、整合產出並給出最終決策報告。"
         },
         {
           "icon": "pen-tool",
           "name": "工兵 A：創意文案 Agent",
           "color": "sage",
-          "detail": "專精文案與社群語境，精通各種 Hook 公式、痛點挖掘。"
+          "detail": "專精文案與社群語境，精通各種吸引注意力的開場公式。"
         },
         {
           "icon": "database",
@@ -1433,7 +1508,7 @@
           "icon": "share",
           "name": "工兵 C：分發執行 Agent",
           "color": "warm",
-          "detail": "專門調度各大社群 API，在精確時間發布圖文視頻。"
+          "detail": "專門調度各大社群 API，在精確時間發布圖文與短影音。"
         }
       ]
     }
@@ -1442,17 +1517,17 @@
     "id": 39,
     "module": "模組 5 · 技術與工具鏈",
     "badge": "知識庫錨定 · 39/50",
-    "title": "RAG 檢索增強：為 Agent 打造專屬品牌大腦",
+    "title": "RAG 檢索增強：為 AI Agent 打造專屬品牌大腦",
     "subtitle": "如何確保 AI 客服 100% 懂你的產品，絕不胡言亂語？",
     "type": "stepper",
     "data": {
       "insight": "LLM 是一顆超級大腦，而 RAG 是給它一本永遠翻開在手邊的『品牌私房手冊』。",
       "steps": [
         {
-          "phase": "第一步：知識餵入",
+          "phase": "第一步：知識匯入",
           "title": "產品規格與問答資料庫",
           "tag": "資料儲存",
-          "desc": "將爆款文案、產品規格說明、創作者語錄、常見退貨 FAQ 全部存入記憶庫。"
+          "desc": "將熱銷文案、產品規格說明、創作者語錄、常見退貨 FAQ 全部存入記憶庫。"
         },
         {
           "phase": "第二步：語意檢索",
@@ -1463,7 +1538,7 @@
         {
           "phase": "第三步：錨定輸出",
           "title": "有憑有據生成溫暖解答",
-          "tag": "杜絕幻覺",
+          "tag": "杜絕虛假",
           "desc": "依據抓取到的事實組織親切回覆，徹底根絕大模型亂編事實的風險！"
         }
       ]
@@ -1472,18 +1547,18 @@
   {
     "id": 40,
     "module": "模組 5 · 技術與工具鏈",
-    "badge": "工具調用 · 40/50",
+    "badge": "工具呼叫 · 40/50",
     "title": "Function Calling：讓 AI 長出手腳的關鍵能力",
     "subtitle": "從「只能動嘴聊天」到「真正打開後台替你改資料」的質變",
     "type": "four_pillars",
     "data": {
-      "insight": "Function Calling 是讓 AI 能夠調用外部真實軟體（Shopify, Stripe, Meta）的唯一橋樑。",
+      "insight": "Function Calling 是讓 AI 能夠串接外部真實軟體（Shopify, Stripe, Meta）的唯一橋樑。",
       "pillars": [
         {
           "icon": "search",
           "name": "1. 意圖識別",
           "color": "terracotta",
-          "detail": "用戶說：『我要退掉昨天買的藍色衣服』➔ 模型辨識出【發起退貨】意圖。"
+          "detail": "使用者說：『我要退掉昨天買的藍色衣服』➔ 模型辨識出【發起退貨】意圖。"
         },
         {
           "icon": "code",
@@ -1501,7 +1576,7 @@
           "icon": "check-circle",
           "name": "4. 親切回報成果",
           "color": "warm",
-          "detail": "API 回傳成功，Agent 溫柔告知客人：『退貨已完成，明天黑貓會去收件喔！』"
+          "detail": "API 回傳成功，Agent 溫柔告知客人：『退貨已完成，明天宅配會去收件喔！』"
         }
       ]
     }
@@ -1510,16 +1585,16 @@
     "id": 41,
     "module": "模組 5 · 技術與工具鏈",
     "badge": "工具組合 · 41/50",
-    "title": "主流低代碼/無代碼電商 Agent 工具鏈推薦",
-    "subtitle": "普通人也能在一個週末內搭建完成的神器組合",
+    "title": "主流低程式碼/無程式碼電商 AI 工具鏈推薦",
+    "subtitle": "一般創作者也能在一個週末內搭建完成的實用神器組合",
     "type": "visual_matrix",
     "data": {
-      "insight": "選對工具，一人就是一個軟體部。這些工具自帶豐富的現代商業軟體整合。",
+      "insight": "選對工具，一人就是一個軟體研發部。這些工具自帶豐富的現代商業軟體整合。",
       "cards": [
         {
           "icon": "git-branch",
           "title": "n8n / Make",
-          "desc": "自動化工作流血管：打通商城、金流、社群與 Email 之間的所有邏輯觸發。"
+          "desc": "自動化工作流骨幹：串聯商城、金流、社群與 Email 之間的所有邏輯觸發。"
         },
         {
           "icon": "cpu",
@@ -1534,7 +1609,7 @@
         {
           "icon": "send",
           "title": "Telegram / Discord",
-          "desc": "創辦人行動指揮中心：所有待審批任務、每日營收報表直接推送到手機。"
+          "desc": "創辦人行動指揮中心：所有待核准任務、每日營收報表直接推送到手機。"
         }
       ]
     }
@@ -1544,10 +1619,10 @@
     "module": "模組 5 · 技術與工具鏈",
     "badge": "提示詞工程 · 42/50",
     "title": "商業級電商 Prompt 架構拆解",
-    "subtitle": "四層結構法：逼出 AI 頂級商業水準的提示詞公式",
+    "subtitle": "四層結構法：引導出 AI 頂級商業水準的提示詞公式",
     "type": "four_pillars",
     "data": {
-      "insight": "隨意的一句話只會得到敷衍產出；嚴格的角色定義才能逼出頂級商業水準。",
+      "insight": "隨意的一句話只會得到敷衍產出；嚴格的角色定義才能引導出頂級商業水準。",
       "pillars": [
         {
           "icon": "user",
@@ -1584,13 +1659,13 @@
     "subtitle": "Agent 如何在發出訊息前，自己檢查自己有沒有犯錯？",
     "type": "stepper",
     "data": {
-      "insight": "頂尖智能體懂得出門前照鏡子。讓審查 Agent 與生成 Agent 相互校對，大幅降低失誤。",
+      "insight": "頂尖 AI 系統懂得出門前照鏡子。讓審查 Agent 與生成 Agent 相互校對，大幅降低失誤。",
       "steps": [
         {
           "phase": "初稿生成",
           "title": "創意 Agent 產生文案",
-          "tag": "天馬行空",
-          "desc": "文案：『這款神仙精油能徹底治療你的頑固失眠，今天下單立享全網最低價！』"
+          "tag": "多元發想",
+          "desc": "文案：『這款精油能徹底治療你的頑固失眠，今天下單立享全網最低價！』"
         },
         {
           "phase": "合規審查反思",
@@ -1611,11 +1686,11 @@
     "id": 44,
     "module": "模組 5 · 技術與工具鏈",
     "badge": "模組總結 · 44/50",
-    "title": "圖解：現代電商 Agent 技術堆疊全貌",
+    "title": "圖解：現代電商 AI Agent 技術體系全貌",
     "subtitle": "四大技術模組緊密咬合，驅動自動化商業循環",
     "type": "flow_chart",
     "data": {
-      "insight": "掌握這套技術積木，你就能以極低成本搭建出屬於你自己的自媒體電商帝國。",
+      "insight": "掌握這套技術積木，你就能以極低成本搭建出屬於你自己的自媒體電商系統。",
       "flow": [
         {
           "step": "01",
@@ -1624,7 +1699,7 @@
         },
         {
           "step": "02",
-          "name": "多工兵協同",
+          "name": "多代理人協同",
           "desc": "Supervisor 任務拆解"
         },
         {
@@ -1634,18 +1709,18 @@
         },
         {
           "step": "04",
-          "name": "工具調用",
-          "desc": "API 連接商城金流"
+          "name": "工具呼叫",
+          "desc": "API 串接商城金流"
         },
         {
           "step": "05",
           "name": "反思審查",
-          "desc": "安全合規自動校對"
+          "desc": "安全法規自動校對"
         },
         {
           "step": "06",
           "name": "自動化工作流",
-          "desc": "n8n / Dify 閉環自轉"
+          "desc": "n8n / Dify 自動運轉"
         }
       ]
     }
@@ -1654,11 +1729,11 @@
     "id": 45,
     "module": "模組 6 · 商業未來展望",
     "badge": "模組導言 · 45/50",
-    "title": "自媒體電商的全新競局",
-    "subtitle": "一人企業如何憑藉算力槓桿，重塑零售商業版圖",
+    "title": "自媒體電商的全新競爭版圖",
+    "subtitle": "一人企業如何憑藉算力槓桿，重塑零售商業生態",
     "type": "hero",
     "data": {
-      "tagline": "未來的商業競爭，不是人與人的競爭，而是各自指揮的 Agent 艦隊效率之爭",
+      "tagline": "未來的商業競爭，不是人與人的競爭，而是各自指揮的 AI Agent 團隊效率之爭",
       "stats": [
         {
           "num": "90%",
@@ -1666,37 +1741,37 @@
         },
         {
           "num": "3 倍",
-          "label": "Agentic 品牌估值乘數提升"
+          "label": "AI Agent 驅動品牌估值乘數提升"
         },
         {
           "num": "無限",
           "label": "超越生理極限的擴張空間"
         }
       ],
-      "coreConcept": "這不是科技的冷血取代，而是將人類創作者從繁瑣泥淖中解放出來的最偉大文藝復興！"
+      "coreConcept": "這不是科技的冰冷取代，而是將人類創作者從繁瑣泥淖中解放出來的最偉大文藝復興！"
     }
   },
   {
     "id": 46,
     "module": "模組 6 · 商業未來展望",
-    "badge": "合規紅線 · 46/50",
+    "badge": "法規安全 · 46/50",
     "title": "版權、透明度與全球法規合規紅線",
     "subtitle": "合規不是絆腳石，而是保護你辛苦建立品牌聲譽的護城河",
     "type": "four_pillars",
     "data": {
-      "insight": "隨著全球對 AI 監管趨嚴，提早合規的品牌將獲得平台最大力度的流量扶持。",
+      "insight": "隨著全球對 AI 監管趨嚴，提早落實合規的品牌將獲得平台最大力度的流量支援。",
       "pillars": [
         {
           "icon": "info",
           "name": "1. AI 內容主動誠實標註",
           "color": "terracotta",
-          "detail": "在社群平台主動勾選『AI 生成內容』標籤，避免被演算法偵測降權封號。"
+          "detail": "在社群平台主動勾選『AI 生成內容』標籤，避免被演算法偵測降權處置。"
         },
         {
           "icon": "award",
           "name": "2. 商用模型版權保護",
           "color": "sage",
-          "detail": "商業出圖僅採用具有商用授權保證的模型，杜絕任何版權侵權官司。"
+          "detail": "商業出圖僅採用具有商用授權保證的模型，杜絕任何版權侵權訴訟。"
         },
         {
           "icon": "user-check",
@@ -1708,7 +1783,7 @@
           "icon": "scale",
           "name": "4. 承擔真實法律責任",
           "color": "warm",
-          "detail": "無論背後是真人還是 Agent，企業法人始終對消費者權益承擔全部法規責任。"
+          "detail": "無論背後是真人還是 AI Agent，企業法人始終對消費者權益承擔全部法規責任。"
         }
       ]
     }
@@ -1718,22 +1793,22 @@
     "module": "模組 6 · 商業未來展望",
     "badge": "人性價值 · 47/50",
     "title": "不可替代的人性價值：人類創作者的唯一護城河",
-    "subtitle": "當所有人都擁有 Agent 時，什麼才是你最值錢的資產？",
+    "subtitle": "當所有人都擁有 AI Agent 時，什麼才是你最值錢的資產？",
     "type": "four_pillars",
     "data": {
       "insight": "AI 負責生產『效率』，人類負責賦予『意義』。沒有靈魂的效率只是毫無價值的產出。",
       "pillars": [
         {
           "icon": "heart",
-          "name": "1. 真實人生體驗與脆弱感",
+          "name": "1. 真實人生體驗與真情流露",
           "color": "terracotta",
-          "detail": "觀眾追隨你，是因為看過你的掙扎與真情流露。算力再強也無法偽造真實的眼淚。"
+          "detail": "觀眾追隨你，是因為看過你的掙扎與真情流露。算力再強也無法偽造真實的情感。"
         },
         {
           "icon": "sparkles",
           "name": "2. 獨一無二的品味與策展",
           "color": "sage",
-          "detail": "什麼該賣、什麼打死不賣？你的審美標準與拒絕妥協的品味，是粉絲為你買單的根本。"
+          "detail": "什麼該推薦、什麼打死不賣？你的審美標準與拒絕妥協的品味，是粉絲為你買單的根本。"
         },
         {
           "icon": "users",
@@ -1745,7 +1820,7 @@
           "icon": "compass",
           "name": "4. 對未知世界的冒險勇氣",
           "color": "warm",
-          "detail": "敢於開闢新選品、踏入新國度、嘗試全新商業模式的直覺與熱情，是進化的源頭！"
+          "detail": "敢於開闢新選品、踏入新國度、嘗試全新商業模式的直覺與熱情，是前進的源頭！"
         }
       ]
     }
@@ -1754,7 +1829,7 @@
     "id": 48,
     "module": "模組 6 · 商業未來展望",
     "badge": "未來三年 · 48/50",
-    "title": "未來 3 年展望：從螢幕跨入具身智能與空間運算",
+    "title": "未來 3 年展望：從螢幕跨入具身智慧與空間運算",
     "subtitle": "2027-2029 自媒體電商即將爆發的三個重大演進",
     "type": "stepper",
     "data": {
@@ -1763,11 +1838,11 @@
         {
           "phase": "演進 1：空間零售 (XR)",
           "title": "虛擬空間沉浸式試穿體驗",
-          "tag": "Apple Vision",
+          "tag": "空間運算",
           "desc": "粉絲戴上空間眼鏡，你的數位分身走到他面前親自示範穿搭與家具擺設。"
         },
         {
-          "phase": "演進 2：具身智能 (Embodied)",
+          "phase": "演進 2：具身智慧 (Embodied)",
           "title": "機器人進駐微型無人倉儲",
           "tag": "硬體履約",
           "desc": "實體機器人在創辦人家中車庫自動抓取貨品、貼單封箱，實現物理世界全自動。"
@@ -1789,7 +1864,7 @@
     "subtitle": "享受科技槓桿帶來的豐盛，同時守護內心真正的平靜與熱情",
     "type": "visual_matrix",
     "data": {
-      "insight": "賺錢是技術的副產品，生活的自由與創造力的綻放才是我們追求的終極目標。",
+      "insight": "商業收益是技術的副產品，生活的自由與創造力的綻放才是我們追求的終極目標。",
       "cards": [
         {
           "icon": "sun",
@@ -1813,8 +1888,8 @@
     "id": 50,
     "module": "模組 6 · 商業未來展望",
     "badge": "行動綱領 · 50/50",
-    "title": "總結：打造你的第一個電商 Agent",
-    "subtitle": "邱俊維 老師送給全班同學的「三步落地行動清單」",
+    "title": "總結：打造你的第一個電商 AI Agent",
+    "subtitle": "邱俊維 老師送給全班同學的「三步實踐行動清單」",
     "type": "conclusion",
     "data": {
       "insight": "偉大的航道不是在計畫中完成的，而是在出海的那一刻就已經展開！",
@@ -1825,7 +1900,7 @@
           "desc": "把你的選品規格說明餵入 Dify，串接社群私訊，親自體驗 24 小時自動回覆與促購的第一個驚喜！"
         },
         {
-          "step": "第一月：打通閉環",
+          "step": "第一月：打通流程",
           "title": "建立「趨勢 ➔ 文案 ➔ 發布」工作流",
           "desc": "用 n8n 將熱搜話題捕捉與多平台短影音文案串聯，讓每週內容產能翻倍，解放 50% 的日常精力！"
         },
@@ -1848,7 +1923,9 @@
       
       const progressPercent = ((index + 1) / totalSlides) * 100;
       document.getElementById("progress-bar").style.width = `${progressPercent}%`;
-      document.getElementById("page-counter").innerText = `${String(index + 1).padStart(2, '0')} / ${totalSlides}`;
+      const counterText = `${String(index + 1).padStart(2, '0')} / ${totalSlides}`;
+      document.getElementById("page-counter").innerText = counterText;
+      document.getElementById("fs-page-counter").innerText = counterText;
       document.getElementById("header-module-label").innerText = data.module;
 
       document.getElementById("prev-btn").disabled = (index === 0);
@@ -1856,7 +1933,7 @@
 
       let contentHtml = "";
 
-      // 1. 首頁 (Hero Cover) - 大字體、少字數
+      // 1. 首頁 (Hero Cover)
       if (data.type === "hero") {
         contentHtml = `
           <div class="flex-1 flex flex-col justify-between space-y-6 sm:space-y-8">
@@ -1933,7 +2010,7 @@
                     </ul>
                   </div>
                   <div class="mt-4 pt-2 border-t border-warm-100 text-xs font-bold text-sage-600 flex items-center gap-1">
-                    <i data-lucide="check" class="w-3.5 h-3.5"></i> 企管實務賦能
+                    <i data-lucide="check" class="w-3.5 h-3.5"></i> 企管實務強化
                   </div>
                 </div>
               `).join('')}
@@ -1952,7 +2029,7 @@
           </div>
         `;
       }
-      // 3. 四大支柱 / 核心圖卡 (Four Pillars) - 字大少言
+      // 3. 四大支柱 / 核心圖卡 (Four Pillars)
       else if (data.type === "four_pillars") {
         contentHtml = `
           <div class="flex-1 flex flex-col justify-between space-y-5">
@@ -1990,7 +2067,7 @@
           </div>
         `;
       }
-      // 4. 雙欄對比 (Comparison) - 大字清晰
+      // 4. 雙欄對比 (Comparison)
       else if (data.type === "comparison") {
         contentHtml = `
           <div class="flex-1 flex flex-col justify-between space-y-5">
@@ -2006,7 +2083,6 @@
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 flex-1 items-stretch">
-              <!-- 左邊：傳統 -->
               <div class="p-5 rounded-2xl bg-warm-50 border border-warm-200 flex flex-col justify-between">
                 <div>
                   <div class="flex items-center justify-between mb-3.5 pb-2.5 border-b border-warm-200">
@@ -2024,7 +2100,6 @@
                 </div>
               </div>
 
-              <!-- 右邊：Agentic -->
               <div class="p-5 rounded-2xl bg-white border-2 border-terracotta-500/80 flex flex-col justify-between shadow-md">
                 <div>
                   <div class="flex items-center justify-between mb-3.5 pb-2.5 border-b border-terracotta-100">
@@ -2195,7 +2270,7 @@
 
             <div class="p-4 rounded-2xl bg-terracotta-50 border border-terracotta-200 text-center">
               <p class="text-sm sm:text-base font-black text-terracotta-800">${data.data.insight}</p>
-              <p class="text-xs text-warm-600 mt-0.5">全課 50 頁展示完畢 ｜ 祝各位同學成功打造個人專屬 Agent 艦隊！</p>
+              <p class="text-xs text-warm-600 mt-0.5">全課 50 頁展示完畢 ｜ 祝各位同學成功打造個人專屬 AI Agent 團隊！</p>
             </div>
           </div>
         `;
@@ -2228,6 +2303,7 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+    // 鍵盤導航
     document.addEventListener("keydown", (e) => {
       if (e.key === "ArrowRight" || e.key === "Space") {
         e.preventDefault();
@@ -2242,47 +2318,68 @@
         e.preventDefault();
         toggleDrawer();
       } else if (e.key === "Escape") {
-        toggleDrawer(false);
+        if (document.body.classList.contains("is-fullscreen")) {
+          toggleFullScreen(false);
+        } else {
+          toggleDrawer(false);
+        }
       }
     });
 
-    function toggleFullScreen() {
+    // 真正滿版全螢幕控制（零邊框、撐滿 100vw x 100vh）
+    function toggleFullScreen(forceState) {
       const doc = document.documentElement;
-      const isFull = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
-      const icon = document.getElementById("fullscreen-icon");
-      const text = document.getElementById("fullscreen-text");
+      const isCurrentlyFs = document.body.classList.contains("is-fullscreen");
+      const shouldFs = (forceState !== undefined) ? forceState : !isCurrentlyFs;
 
-      if (!isFull) {
+      if (shouldFs) {
+        // 進入全螢幕 API
         if (doc.requestFullscreen) {
           doc.requestFullscreen().catch(() => {});
         } else if (doc.webkitRequestFullscreen) {
           doc.webkitRequestFullscreen();
-        } else if (doc.mozRequestFullScreen) {
-          doc.mozRequestFullScreen();
         } else if (doc.msRequestFullscreen) {
           doc.msRequestFullscreen();
         }
-        if (text) text.innerText = "退出全螢幕";
+        document.body.classList.add("is-fullscreen");
       } else {
-        if (document.exitFullscreen) {
-          document.exitFullscreen().catch(() => {});
-        } else if (document.webkitExitFullscreen) {
-          document.webkitExitFullscreen();
-        } else if (document.mozCancelFullScreen) {
-          document.mozCancelFullScreen();
-        } else if (document.msExitFullscreen) {
-          document.msExitFullscreen();
+        // 退出全螢幕 API
+        if (document.fullscreenElement || document.webkitFullscreenElement) {
+          if (document.exitFullscreen) {
+            document.exitFullscreen().catch(() => {});
+          } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+          }
         }
-        if (text) text.innerText = "全螢幕";
+        document.body.classList.remove("is-fullscreen");
       }
+      // 重新整理圖標
+      lucide.createIcons();
     }
 
+    // 監聽全螢幕變化事件以保持狀態同步
     document.addEventListener("fullscreenchange", () => {
-      const isFull = !!document.fullscreenElement;
-      const text = document.getElementById("fullscreen-text");
-      if (text) text.innerText = isFull ? "退出全螢幕" : "全螢幕";
+      if (document.fullscreenElement) {
+        document.body.classList.add("is-fullscreen");
+      } else {
+        document.body.classList.remove("is-fullscreen");
+      }
+      lucide.createIcons();
     });
 
+    // 全螢幕懸浮控制條滑鼠移動自動喚醒
+    let fsTimeout;
+    document.addEventListener("mousemove", () => {
+      if (document.body.classList.contains("is-fullscreen")) {
+        document.body.classList.add("show-controls");
+        clearTimeout(fsTimeout);
+        fsTimeout = setTimeout(() => {
+          document.body.classList.remove("show-controls");
+        }, 3000);
+      }
+    });
+
+    // 手機觸控左右滑動
     let touchStartX = 0;
     let touchStartY = 0;
     document.addEventListener("touchstart", (e) => {
