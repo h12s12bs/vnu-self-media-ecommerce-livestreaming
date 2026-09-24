@@ -1,17 +1,21 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-TW" class="scroll-smooth">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Agentic AI 自媒體電商應用 (50 頁精選指南)</title>
-  <!-- Tailwind CSS via CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Google Fonts: Noto Sans TC & Inter -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agentic AI 自媒體電商應用 ｜ 萬能科技大學 企業管理系 邱俊維 博士</title>
+  
+  <!-- Google Fonts: Inter & Noto Sans TC -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+TC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
+
   <script>
     tailwind.config = {
       theme: {
@@ -22,31 +26,39 @@
           colors: {
             warm: {
               50: '#FAF8F5',
-              100: '#F5F2EB',
+              100: '#F4EFE6',
               200: '#EAE4D6',
               300: '#DCD4C2',
-              400: '#C2B69F',
-              500: '#A4957D',
-              600: '#7E705A',
-              700: '#5A4F3D',
-              800: '#383024',
-              900: '#201A12',
+              400: '#C2B69D',
+              500: '#9E9075',
+              600: '#7D7056',
+              700: '#5E533E',
+              800: '#41392A',
+              900: '#262016',
             },
             terracotta: {
-              50: '#FDF6F3',
-              100: '#F9ECE5',
-              200: '#F2D3C4',
-              500: '#D96B43',
-              600: '#C25730',
-              700: '#9B3F1F',
+              50: '#FFF5F2',
+              100: '#FFE8E1',
+              200: '#FFD2C4',
+              300: '#FFAF97',
+              400: '#F98160',
+              500: '#E76F51',
+              600: '#CE5334',
+              700: '#A93B20',
+              800: '#87301B',
+              900: '#6E2A19',
             },
             sage: {
-              50: '#F4F7F4',
-              100: '#E5ECE5',
-              200: '#CDDBCD',
-              500: '#4A6B5D',
-              600: '#3A554A',
-              700: '#2B4037',
+              50: '#F4F7F5',
+              100: '#E3EBE6',
+              200: '#C5D7CC',
+              300: '#9FBFA9',
+              400: '#75A384',
+              500: '#2A9D8F',
+              600: '#228176',
+              700: '#1C665E',
+              800: '#18514B',
+              900: '#14423D',
             },
             amberwood: {
               50: '#FDF9F0',
@@ -60,27 +72,100 @@
     }
   </script>
   <style>
+    :root {
+      /* 大字體標準：依據要求「字全部都太小至少28點以上」 */
+      --slide-badge-size: 22pt;
+      --slide-meta-size: 22pt;
+      --slide-body-size: 28pt;      /* 內文最低 28 點 (28pt ≈ 37.33px) */
+      --slide-subhead-size: 32pt;   /* 卡片標題 32 點 */
+      --slide-title-size: 44pt;     /* 投影片標題 44 點 */
+      --slide-hero-size: 58pt;      /* 首頁封面大標題 58 點 */
+      --slide-stat-size: 62pt;      /* 核心數據 62 點 */
+    }
+
+    @media (max-width: 1024px) {
+      :root {
+        --slide-badge-size: 16pt;
+        --slide-meta-size: 16pt;
+        --slide-body-size: 22pt;
+        --slide-subhead-size: 26pt;
+        --slide-title-size: 34pt;
+        --slide-hero-size: 44pt;
+        --slide-stat-size: 50pt;
+      }
+    }
+
+    @media (max-width: 640px) {
+      :root {
+        --slide-badge-size: 14pt;
+        --slide-meta-size: 14pt;
+        --slide-body-size: 18pt;
+        --slide-subhead-size: 22pt;
+        --slide-title-size: 28pt;
+        --slide-hero-size: 34pt;
+        --slide-stat-size: 40pt;
+      }
+    }
+
     html, body {
       background-color: #FAF8F5;
-      color: #201A12;
+      color: #262016;
       touch-action: pan-y;
       -webkit-tap-highlight-color: transparent;
       margin: 0;
       padding: 0;
+      font-size: 16px;
     }
+
+    /* 投影片專屬排版字級工具 */
+    .slide-text-badge {
+      font-size: var(--slide-badge-size) !important;
+      line-height: 1.35 !important;
+      font-weight: 700 !important;
+    }
+    .slide-text-meta {
+      font-size: var(--slide-meta-size) !important;
+      line-height: 1.35 !important;
+      font-weight: 700 !important;
+    }
+    .slide-text-body {
+      font-size: var(--slide-body-size) !important;
+      line-height: 1.5 !important;
+      font-weight: 600 !important;
+    }
+    .slide-text-subhead {
+      font-size: var(--slide-subhead-size) !important;
+      line-height: 1.3 !important;
+      font-weight: 800 !important;
+    }
+    .slide-text-title {
+      font-size: var(--slide-title-size) !important;
+      line-height: 1.2 !important;
+      font-weight: 900 !important;
+    }
+    .slide-text-hero {
+      font-size: var(--slide-hero-size) !important;
+      line-height: 1.15 !important;
+      font-weight: 900 !important;
+    }
+    .slide-text-stat {
+      font-size: var(--slide-stat-size) !important;
+      line-height: 1.05 !important;
+      font-weight: 900 !important;
+    }
+
     .warm-card {
       background: #FFFFFF;
-      border: 1px solid #EAE4D6;
-      box-shadow: 0 4px 16px -2px rgba(56, 48, 36, 0.05);
-      border-radius: 1.25rem;
+      border: 2px solid #EAE4D6;
+      box-shadow: 0 4px 20px -2px rgba(56, 48, 36, 0.06);
+      border-radius: 1.5rem;
     }
     .warm-badge {
       display: inline-flex;
       align-items: center;
-      gap: 0.375rem;
-      padding: 0.25rem 0.75rem;
+      gap: 0.5rem;
+      padding: 0.35rem 1rem;
       border-radius: 9999px;
-      font-size: 0.8rem;
       font-weight: 700;
     }
     
@@ -104,7 +189,7 @@
       max-width: 100vw !important;
       max-height: 100vh !important;
       display: flex !important;
-      align-items: center !important;
+      align-items: stretch !important;
       justify-content: center !important;
     }
     body.is-fullscreen #slide-wrapper {
@@ -116,16 +201,17 @@
       border: none !important;
       box-shadow: none !important;
       margin: 0 !important;
-      padding: 2.5rem 3.5rem !important;
+      padding: 3rem 4rem 5rem 4rem !important;
       box-sizing: border-box !important;
+      overflow-y: auto !important;
     }
-    @media (max-width: 640px) {
+    @media (max-width: 768px) {
       body.is-fullscreen #slide-wrapper {
-        padding: 1.25rem 1rem 4rem 1rem !important;
+        padding: 1.5rem 1.25rem 5rem 1.25rem !important;
       }
     }
 
-    /* 全螢幕浮動控制條 (滑鼠靜止自動淡出，移動即浮現) */
+    /* 全螢幕浮動控制條 (滑鼠移到底部浮現) */
     #fs-floating-bar {
       display: none;
       opacity: 0;
@@ -141,8 +227,8 @@
 
     /* 滾動條樣式 */
     ::-webkit-scrollbar {
-      width: 5px;
-      height: 5px;
+      width: 6px;
+      height: 6px;
     }
     ::-webkit-scrollbar-track {
       background: #FAF8F5;
@@ -156,60 +242,60 @@
 <body class="min-h-screen flex flex-col font-sans select-none antialiased" id="body-container">
 
   <!-- 頂部進度條 -->
-  <div class="w-full h-1.5 bg-warm-200 sticky top-0 z-50" id="progress-bar-container">
+  <div class="w-full h-2 bg-warm-200 sticky top-0 z-50" id="progress-bar-container">
     <div id="progress-bar" class="h-full bg-terracotta-500 transition-all duration-300" style="width: 2%;"></div>
   </div>
 
   <!-- 頂部導航列 (全螢幕時隱藏) -->
-  <header class="w-full px-3 md:px-6 py-2.5 flex items-center justify-between border-b border-warm-200 bg-white/90 backdrop-blur sticky top-1.5 z-40">
-    <div class="flex items-center gap-2 md:gap-3 min-w-0">
-      <div class="w-8 h-8 rounded-lg bg-terracotta-500 text-white flex items-center justify-center font-black text-xs shadow-sm flex-shrink-0">
+  <header class="w-full px-4 md:px-8 py-3.5 flex items-center justify-between border-b border-warm-200 bg-white/95 backdrop-blur sticky top-2 z-40">
+    <div class="flex items-center gap-3 min-w-0">
+      <div class="w-10 h-10 rounded-xl bg-terracotta-500 text-white flex items-center justify-center font-black text-sm shadow-sm flex-shrink-0">
         AI
       </div>
       <div class="min-w-0">
-        <h1 class="text-xs md:text-sm font-black tracking-tight text-warm-900 truncate">Agentic AI 自媒體電商應用</h1>
-        <p class="text-[10px] md:text-xs text-warm-600 font-medium truncate" id="header-module-label">模組 1 · 觀念躍升</p>
+        <h1 class="text-sm md:text-base font-black tracking-tight text-warm-900 truncate">Agentic AI 自媒體電商應用</h1>
+        <p class="text-xs md:text-sm text-warm-600 font-bold truncate" id="header-module-label">模組 1 · 觀念躍升</p>
       </div>
     </div>
 
     <!-- 右側功能按鈕 -->
-    <div class="flex items-center gap-1.5 md:gap-2 flex-shrink-0">
-      <button onclick="toggleDrawer()" class="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-warm-200 bg-warm-50 hover:bg-white text-xs font-bold text-warm-800 transition shadow-sm">
-        <i data-lucide="layers" class="w-3.5 h-3.5 text-terracotta-500"></i>
+    <div class="flex items-center gap-2 md:gap-3 flex-shrink-0">
+      <button onclick="toggleDrawer()" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-warm-300 bg-warm-50 hover:bg-white text-xs md:text-sm font-bold text-warm-800 transition shadow-sm">
+        <i data-lucide="layers" class="w-4 h-4 text-terracotta-500"></i>
         <span class="hidden sm:inline">50 頁目錄</span>
       </button>
-      <button onclick="toggleFullScreen()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-terracotta-500 hover:bg-terracotta-600 text-xs font-bold text-white transition shadow-sm" title="進入純滿版全螢幕 (F)">
-        <i data-lucide="maximize" class="w-3.5 h-3.5"></i>
+      <button onclick="toggleFullScreen()" class="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-terracotta-500 hover:bg-terracotta-600 text-xs md:text-sm font-bold text-white transition shadow-sm" title="進入純滿版全螢幕 (F)">
+        <i data-lucide="maximize" class="w-4 h-4"></i>
         <span>全螢幕播放</span>
       </button>
-      <div class="h-4 w-px bg-warm-200 mx-0.5"></div>
-      <span class="text-xs font-extrabold text-warm-800 tabular-nums px-1" id="page-counter">01 / 50</span>
+      <div class="h-5 w-px bg-warm-300 mx-1"></div>
+      <span class="text-xs md:text-sm font-black text-warm-800 tabular-nums px-1" id="page-counter">01 / 50</span>
     </div>
   </header>
 
-  <!-- 主幻燈片區域 -->
-  <main class="flex-1 w-full flex items-center justify-center p-3 sm:p-5 md:p-8" id="main-deck-area">
-    <div id="slide-wrapper" class="w-full max-w-6xl bg-white rounded-2xl md:rounded-3xl border border-warm-200 shadow-sm p-5 sm:p-7 md:p-10 flex flex-col justify-between min-h-[500px] md:min-h-[600px] transition-all duration-200">
+  <!-- 主幻燈片區域 (寬幅擴充至 1500px，呈現大字體震撼視覺) -->
+  <main class="flex-1 w-full flex items-center justify-center p-3 sm:p-6 md:p-10" id="main-deck-area">
+    <div id="slide-wrapper" class="w-full max-w-[1500px] bg-white rounded-3xl border-2 border-warm-200 shadow-md p-6 sm:p-10 md:p-14 flex flex-col justify-between min-h-[640px] md:min-h-[720px] transition-all duration-200">
       <!-- 內容由 JavaScript 動態渲染 -->
     </div>
   </main>
 
   <!-- 底部固定控制列 (一般模式，全螢幕時隱藏) -->
-  <footer class="w-full px-4 md:px-8 py-3 border-t border-warm-200 bg-white/95 backdrop-blur flex items-center justify-between text-xs text-warm-600 sticky bottom-0 z-40">
-    <div class="hidden sm:flex items-center gap-3 text-warm-500 text-xs">
-      <span class="flex items-center gap-1"><kbd class="px-2 py-0.5 bg-warm-100 border border-warm-200 rounded font-mono text-[11px]">←</kbd> <kbd class="px-2 py-0.5 bg-warm-100 border border-warm-200 rounded font-mono text-[11px]">→</kbd> 翻頁</span>
-      <span>• 支援手機左右滑動螢幕</span>
-      <span>• 按 <kbd class="px-2 py-0.5 bg-warm-100 border border-warm-200 rounded font-mono text-[11px]">F</kbd> 滿版全螢幕</span>
+  <footer class="w-full px-5 md:px-10 py-4 border-t border-warm-200 bg-white/95 backdrop-blur flex items-center justify-between text-sm text-warm-700 sticky bottom-0 z-40">
+    <div class="hidden sm:flex items-center gap-4 text-warm-600 font-medium">
+      <span class="flex items-center gap-1.5"><kbd class="px-2.5 py-1 bg-warm-100 border border-warm-300 rounded-lg font-mono text-xs font-bold">←</kbd> <kbd class="px-2.5 py-1 bg-warm-100 border border-warm-300 rounded-lg font-mono text-xs font-bold">→</kbd> 翻頁</span>
+      <span>• 手機支援左右滑動翻頁</span>
+      <span>• 按 <kbd class="px-2.5 py-1 bg-warm-100 border border-warm-300 rounded-lg font-mono text-xs font-bold">F</kbd> 鍵無邊框滿版全螢幕</span>
     </div>
-    <div class="text-xs sm:hidden text-warm-500 font-semibold">
+    <div class="text-sm sm:hidden text-warm-600 font-bold">
       👈 左右滑動螢幕翻頁 👉
     </div>
-    <div class="flex items-center gap-2">
-      <button onclick="prevSlide()" class="px-4 py-2 rounded-xl border border-warm-300 bg-white hover:bg-warm-50 text-warm-900 font-bold flex items-center gap-1 transition shadow-sm active:scale-95 disabled:opacity-40" id="prev-btn">
-        <i data-lucide="chevron-left" class="w-4 h-4"></i> 上一頁
+    <div class="flex items-center gap-3">
+      <button onclick="prevSlide()" class="px-5 py-2.5 rounded-xl border-2 border-warm-300 bg-white hover:bg-warm-100 text-warm-900 font-bold flex items-center gap-1.5 transition shadow-sm active:scale-95 disabled:opacity-40" id="prev-btn">
+        <i data-lucide="chevron-left" class="w-5 h-5"></i> 上一頁
       </button>
-      <button onclick="nextSlide()" class="px-5 py-2 rounded-xl bg-terracotta-500 hover:bg-terracotta-600 text-white font-bold flex items-center gap-1 transition shadow-sm active:scale-95 disabled:opacity-40" id="next-btn">
-        下一頁 <i data-lucide="chevron-right" class="w-4 h-4"></i>
+      <button onclick="nextSlide()" class="px-6 py-2.5 rounded-xl bg-terracotta-500 hover:bg-terracotta-600 text-white font-bold flex items-center gap-1.5 transition shadow-sm active:scale-95 disabled:opacity-40" id="next-btn">
+        下一頁 <i data-lucide="chevron-right" class="w-5 h-5"></i>
       </button>
     </div>
   </footer>
@@ -217,37 +303,37 @@
   <!-- ========================================= -->
   <!-- 全螢幕專屬懸浮控制條 (零邊框滿版時浮動顯示) -->
   <!-- ========================================= -->
-  <div id="fs-floating-bar" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 bg-warm-900/85 backdrop-blur-md text-white px-5 py-2.5 rounded-full shadow-2xl items-center gap-4 text-xs font-bold border border-warm-700/60">
-    <span class="text-warm-300 tabular-nums" id="fs-page-counter">01 / 50</span>
-    <div class="h-3.5 w-px bg-warm-700"></div>
-    <button onclick="prevSlide()" class="hover:text-terracotta-400 flex items-center gap-1 transition">
-      <i data-lucide="chevron-left" class="w-4 h-4"></i> 上一頁
+  <div id="fs-floating-bar" class="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50 bg-warm-900/90 backdrop-blur-md text-white px-6 py-3 rounded-full shadow-2xl items-center gap-5 text-sm md:text-base font-bold border border-warm-700/70">
+    <span class="text-warm-300 tabular-nums font-black" id="fs-page-counter">01 / 50</span>
+    <div class="h-4 w-px bg-warm-700"></div>
+    <button onclick="prevSlide()" class="hover:text-terracotta-400 flex items-center gap-1.5 transition">
+      <i data-lucide="chevron-left" class="w-5 h-5"></i> 上一頁
     </button>
-    <button onclick="nextSlide()" class="hover:text-terracotta-400 flex items-center gap-1 transition">
-      下一頁 <i data-lucide="chevron-right" class="w-4 h-4"></i>
+    <button onclick="nextSlide()" class="hover:text-terracotta-400 flex items-center gap-1.5 transition">
+      下一頁 <i data-lucide="chevron-right" class="w-5 h-5"></i>
     </button>
-    <div class="h-3.5 w-px bg-warm-700"></div>
-    <button onclick="toggleDrawer()" class="hover:text-terracotta-400 flex items-center gap-1 transition">
-      <i data-lucide="layers" class="w-4 h-4"></i> 目錄
+    <div class="h-4 w-px bg-warm-700"></div>
+    <button onclick="toggleDrawer()" class="hover:text-terracotta-400 flex items-center gap-1.5 transition">
+      <i data-lucide="layers" class="w-5 h-5"></i> 目錄
     </button>
-    <button onclick="toggleFullScreen()" class="hover:text-terracotta-400 flex items-center gap-1 transition text-warm-300">
-      <i data-lucide="minimize" class="w-4 h-4"></i> 退出全螢幕 (Esc)
+    <button onclick="toggleFullScreen()" class="hover:text-terracotta-400 flex items-center gap-1.5 transition text-warm-300">
+      <i data-lucide="minimize" class="w-5 h-5"></i> 退出全螢幕 (Esc)
     </button>
   </div>
 
   <!-- 50 頁目錄彈出抽屜 -->
-  <div id="drawer-backdrop" onclick="toggleDrawer(false)" class="fixed inset-0 bg-warm-900/40 backdrop-blur-sm z-50 hidden transition-opacity"></div>
+  <div id="drawer-backdrop" onclick="toggleDrawer(false)" class="fixed inset-0 bg-warm-900/50 backdrop-blur-sm z-50 hidden transition-opacity"></div>
   <div id="overview-drawer" class="fixed right-0 top-0 bottom-0 w-full max-w-md bg-warm-50 shadow-2xl z-50 transform translate-x-full transition-transform duration-300 flex flex-col border-l border-warm-200">
     <div class="p-4 border-b border-warm-200 flex items-center justify-between bg-white">
       <div class="flex items-center gap-2">
         <i data-lucide="layers" class="w-5 h-5 text-terracotta-500"></i>
-        <h2 class="text-sm font-bold text-warm-900">50 頁簡報導覽清單</h2>
+        <h2 class="text-base font-bold text-warm-900">50 頁簡報導覽清單</h2>
       </div>
-      <button onclick="toggleDrawer(false)" class="p-1 rounded-lg hover:bg-warm-100 text-warm-600">
+      <button onclick="toggleDrawer(false)" class="p-1.5 rounded-lg hover:bg-warm-100 text-warm-600">
         <i data-lucide="x" class="w-5 h-5"></i>
       </button>
     </div>
-    <div class="flex-1 overflow-y-auto p-3 space-y-2" id="drawer-list">
+    <div class="flex-1 overflow-y-auto p-3 space-y-2.5" id="drawer-list">
       <!-- 目錄項動態渲染 -->
     </div>
   </div>
@@ -1936,40 +2022,40 @@
       // 1. 首頁 (Hero Cover)
       if (data.type === "hero") {
         contentHtml = `
-          <div class="flex-1 flex flex-col justify-between space-y-6 sm:space-y-8">
-            <div class="space-y-4">
-              <div class="flex items-center gap-2">
-                <span class="warm-badge bg-terracotta-100 text-terracotta-700 border border-terracotta-200">
-                  <i data-lucide="sparkles" class="w-4 h-4"></i> ${data.badge}
+          <div class="flex-1 flex flex-col justify-between space-y-8">
+            <div class="space-y-5">
+              <div class="flex items-center gap-3">
+                <span class="warm-badge bg-terracotta-100 text-terracotta-700 border border-terracotta-300 slide-text-badge px-4 py-1.5">
+                  <i data-lucide="sparkles" class="w-6 h-6"></i> ${data.badge}
                 </span>
-                <span class="text-xs font-bold text-warm-600 uppercase tracking-wider">${data.module}</span>
+                <span class="slide-text-meta font-extrabold text-warm-600 uppercase tracking-wider">${data.module}</span>
               </div>
-              <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-warm-900 tracking-tight leading-tight">
+              <h1 class="slide-text-hero font-black text-warm-900 tracking-tight leading-tight">
                 ${data.title}
               </h1>
-              <p class="text-lg sm:text-xl md:text-2xl font-bold text-terracotta-600">
+              <p class="slide-text-subhead font-bold text-terracotta-600">
                 ${data.subtitle}
               </p>
               ${data.data.tagline ? `
-                <div class="p-4 rounded-2xl bg-warm-100 border-l-4 border-terracotta-500 text-sm sm:text-base font-bold text-warm-800">
+                <div class="p-6 rounded-2xl bg-warm-100 border-l-8 border-terracotta-500 slide-text-body font-bold text-warm-900 shadow-sm">
                   ${data.data.tagline}
                 </div>
               ` : ''}
             </div>
 
             <!-- 數據大字報 -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
               ${data.data.stats.map(s => `
-                <div class="warm-card p-5 border-t-4 border-terracotta-500 text-center sm:text-left">
-                  <div class="text-3xl sm:text-4xl font-black text-terracotta-600 mb-1">${s.num}</div>
-                  <div class="text-xs sm:text-sm font-bold text-warm-700">${s.label}</div>
+                <div class="warm-card p-6 border-t-8 border-terracotta-500 text-center sm:text-left">
+                  <div class="slide-text-stat font-black text-terracotta-600 mb-2">${s.num}</div>
+                  <div class="slide-text-body font-bold text-warm-800">${s.label}</div>
                 </div>
               `).join('')}
             </div>
 
             <!-- 核心概念 -->
-            <div class="p-4 rounded-2xl bg-sage-50 border border-sage-200 text-sage-900 text-sm sm:text-base font-semibold flex items-center gap-3">
-              <i data-lucide="check-circle" class="w-5 h-5 text-sage-600 flex-shrink-0"></i>
+            <div class="p-6 rounded-2xl bg-sage-50 border-2 border-sage-300 text-sage-950 slide-text-body font-bold flex items-center gap-4 shadow-sm">
+              <i data-lucide="check-circle" class="w-8 h-8 text-sage-600 flex-shrink-0"></i>
               <span>${data.data.coreConcept}</span>
             </div>
           </div>
@@ -1978,90 +2064,90 @@
       // 2. 教師自介 (Profile Slide)
       else if (data.type === "profile_slide") {
         contentHtml = `
-          <div class="flex-1 flex flex-col justify-between space-y-5">
+          <div class="flex-1 flex flex-col justify-between space-y-6">
             <div>
-              <div class="flex items-center gap-2 mb-1.5">
-                <span class="warm-badge bg-terracotta-100 text-terracotta-700 border border-terracotta-200">
-                  <i data-lucide="user-check" class="w-4 h-4"></i> ${data.badge}
+              <div class="flex items-center gap-3 mb-2">
+                <span class="warm-badge bg-terracotta-100 text-terracotta-700 border border-terracotta-300 slide-text-badge px-4 py-1.5">
+                  <i data-lucide="user-check" class="w-6 h-6"></i> ${data.badge}
                 </span>
-                <span class="text-xs font-bold text-warm-600">${data.module}</span>
+                <span class="slide-text-meta font-bold text-warm-600">${data.module}</span>
               </div>
-              <h2 class="text-2xl sm:text-3xl md:text-4xl font-black text-warm-900 tracking-tight">${data.title}</h2>
-              <p class="text-sm sm:text-base font-bold text-terracotta-600 mt-1">${data.subtitle}</p>
+              <h2 class="slide-text-title font-black text-warm-900 tracking-tight">${data.title}</h2>
+              <p class="slide-text-subhead font-bold text-terracotta-600 mt-1">${data.subtitle}</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 flex-1 items-stretch">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1 items-stretch">
               ${data.data.sections.map(sec => `
-                <div class="warm-card p-5 flex flex-col justify-between">
+                <div class="warm-card p-6 flex flex-col justify-between">
                   <div>
-                    <div class="flex items-center gap-2.5 mb-3 pb-2 border-b border-warm-100">
-                      <div class="w-8 h-8 rounded-xl bg-warm-100 text-terracotta-600 flex items-center justify-center font-black">
-                        <i data-lucide="${sec.icon}" class="w-4 h-4"></i>
+                    <div class="flex items-center gap-3 mb-4 pb-3 border-b-2 border-warm-200">
+                      <div class="w-12 h-12 rounded-xl bg-warm-100 text-terracotta-600 flex items-center justify-center font-black flex-shrink-0">
+                        <i data-lucide="${sec.icon}" class="w-7 h-7"></i>
                       </div>
-                      <h3 class="text-sm sm:text-base font-bold text-warm-900">${sec.title}</h3>
+                      <h3 class="slide-text-subhead font-bold text-warm-900">${sec.title}</h3>
                     </div>
-                    <ul class="space-y-2 text-xs sm:text-sm text-warm-700 font-medium">
+                    <ul class="space-y-3 slide-text-body text-warm-800 font-semibold">
                       ${sec.items.map(item => `
-                        <li class="flex items-start gap-2">
-                          <span class="w-1.5 h-1.5 rounded-full bg-terracotta-500 mt-1.5 flex-shrink-0"></span>
+                        <li class="flex items-start gap-3">
+                          <span class="w-2.5 h-2.5 rounded-full bg-terracotta-500 mt-3 flex-shrink-0"></span>
                           <span>${item}</span>
                         </li>
                       `).join('')}
                     </ul>
                   </div>
-                  <div class="mt-4 pt-2 border-t border-warm-100 text-xs font-bold text-sage-600 flex items-center gap-1">
-                    <i data-lucide="check" class="w-3.5 h-3.5"></i> 企管實務強化
+                  <div class="mt-5 pt-3 border-t border-warm-200 slide-text-meta font-bold text-sage-700 flex items-center gap-2">
+                    <i data-lucide="check" class="w-6 h-6"></i> 企管實務強化
                   </div>
                 </div>
               `).join('')}
             </div>
 
             <!-- 聯絡列 -->
-            <div class="p-3.5 rounded-2xl bg-warm-100 border border-warm-200 flex flex-wrap items-center justify-between gap-3 text-xs sm:text-sm font-semibold text-warm-800">
-              <div class="flex items-center gap-4 flex-wrap">
-                <span class="flex items-center gap-1.5"><i data-lucide="mail" class="w-4 h-4 text-terracotta-500"></i> ${data.data.email}</span>
-                <span class="flex items-center gap-1.5"><i data-lucide="map-pin" class="w-4 h-4 text-sage-600"></i> ${data.data.office}</span>
+            <div class="p-5 rounded-2xl bg-warm-100 border-2 border-warm-200 flex flex-wrap items-center justify-between gap-4 slide-text-body font-bold text-warm-900">
+              <div class="flex items-center gap-6 flex-wrap">
+                <span class="flex items-center gap-2"><i data-lucide="mail" class="w-7 h-7 text-terracotta-500"></i> ${data.data.email}</span>
+                <span class="flex items-center gap-2"><i data-lucide="map-pin" class="w-7 h-7 text-sage-600"></i> ${data.data.office}</span>
               </div>
-              <a href="${data.data.website}" target="_blank" class="text-terracotta-600 font-bold hover:underline flex items-center gap-1">
-                <span>個人官方網站 (Portfolio)</span> <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+              <a href="${data.data.website}" target="_blank" class="text-terracotta-600 font-extrabold hover:underline flex items-center gap-2">
+                <span>個人官方網站 (Portfolio)</span> <i data-lucide="external-link" class="w-6 h-6"></i>
               </a>
             </div>
           </div>
         `;
       }
-      // 3. 四大支柱 / 核心圖卡 (Four Pillars)
+      // 3. 四大核心圖卡 (Four Pillars)
       else if (data.type === "four_pillars") {
         contentHtml = `
-          <div class="flex-1 flex flex-col justify-between space-y-5">
+          <div class="flex-1 flex flex-col justify-between space-y-6">
             <div>
-              <div class="flex items-center gap-2 mb-1.5">
-                <span class="warm-badge bg-warm-200 text-warm-800 border border-warm-300">
+              <div class="flex items-center gap-3 mb-2">
+                <span class="warm-badge bg-warm-200 text-warm-800 border border-warm-300 slide-text-badge px-4 py-1.5">
                   ${data.badge}
                 </span>
-                <span class="text-xs font-bold text-warm-600">${data.module}</span>
+                <span class="slide-text-meta font-bold text-warm-600">${data.module}</span>
               </div>
-              <h2 class="text-2xl sm:text-3xl md:text-4xl font-black text-warm-900 tracking-tight">${data.title}</h2>
-              <p class="text-sm sm:text-base font-bold text-warm-600 mt-1">${data.subtitle}</p>
+              <h2 class="slide-text-title font-black text-warm-900 tracking-tight">${data.title}</h2>
+              <p class="slide-text-subhead font-bold text-warm-600 mt-1">${data.subtitle}</p>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 flex-1 items-stretch">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 flex-1 items-stretch">
               ${data.data.pillars.map((p, idx) => `
-                <div class="warm-card p-5 flex flex-col justify-between hover:border-terracotta-400 transition">
+                <div class="warm-card p-6 flex flex-col justify-between hover:border-terracotta-400 transition">
                   <div>
-                    <div class="flex items-center gap-3 mb-2.5">
-                      <div class="w-9 h-9 rounded-xl bg-warm-100 text-terracotta-600 flex items-center justify-center font-black">
-                        <i data-lucide="${p.icon || 'star'}" class="w-5 h-5"></i>
+                    <div class="flex items-center gap-3.5 mb-3">
+                      <div class="w-12 h-12 rounded-xl bg-warm-100 text-terracotta-600 flex items-center justify-center font-black flex-shrink-0">
+                        <i data-lucide="${p.icon || 'star'}" class="w-7 h-7"></i>
                       </div>
-                      <h3 class="text-base sm:text-lg font-bold text-warm-900">${p.name}</h3>
+                      <h3 class="slide-text-subhead font-bold text-warm-900">${p.name}</h3>
                     </div>
-                    <p class="text-sm sm:text-base text-warm-700 font-medium leading-relaxed">${p.detail}</p>
+                    <p class="slide-text-body text-warm-800 font-semibold leading-relaxed">${p.detail}</p>
                   </div>
                 </div>
               `).join('')}
             </div>
 
-            <div class="p-3.5 rounded-2xl bg-warm-100 border border-warm-200 flex items-center gap-2.5 text-xs sm:text-sm font-bold text-warm-900">
-              <i data-lucide="lightbulb" class="w-4 h-4 text-terracotta-500 flex-shrink-0"></i>
+            <div class="p-5 rounded-2xl bg-warm-100 border-2 border-warm-200 flex items-center gap-3 slide-text-body font-bold text-warm-900 shadow-sm">
+              <i data-lucide="lightbulb" class="w-8 h-8 text-terracotta-500 flex-shrink-0"></i>
               <span>${data.data.insight}</span>
             </div>
           </div>
@@ -2070,29 +2156,29 @@
       // 4. 雙欄對比 (Comparison)
       else if (data.type === "comparison") {
         contentHtml = `
-          <div class="flex-1 flex flex-col justify-between space-y-5">
+          <div class="flex-1 flex flex-col justify-between space-y-6">
             <div>
-              <div class="flex items-center gap-2 mb-1.5">
-                <span class="warm-badge bg-terracotta-100 text-terracotta-700 border border-terracotta-200">
+              <div class="flex items-center gap-3 mb-2">
+                <span class="warm-badge bg-terracotta-100 text-terracotta-700 border border-terracotta-300 slide-text-badge px-4 py-1.5">
                   ${data.badge}
                 </span>
-                <span class="text-xs font-bold text-warm-600">${data.module}</span>
+                <span class="slide-text-meta font-bold text-warm-600">${data.module}</span>
               </div>
-              <h2 class="text-2xl sm:text-3xl md:text-4xl font-black text-warm-900 tracking-tight">${data.title}</h2>
-              <p class="text-sm sm:text-base font-bold text-warm-600 mt-1">${data.subtitle}</p>
+              <h2 class="slide-text-title font-black text-warm-900 tracking-tight">${data.title}</h2>
+              <p class="slide-text-subhead font-bold text-warm-600 mt-1">${data.subtitle}</p>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 flex-1 items-stretch">
-              <div class="p-5 rounded-2xl bg-warm-50 border border-warm-200 flex flex-col justify-between">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 flex-1 items-stretch">
+              <div class="p-6 rounded-2xl bg-warm-50 border-2 border-warm-200 flex flex-col justify-between">
                 <div>
-                  <div class="flex items-center justify-between mb-3.5 pb-2.5 border-b border-warm-200">
-                    <h3 class="text-sm sm:text-base font-bold text-warm-900">${data.data.leftTitle}</h3>
-                    <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-stone-200 text-stone-700">${data.data.leftBadge}</span>
+                  <div class="flex items-center justify-between mb-4 pb-3 border-b-2 border-warm-200">
+                    <h3 class="slide-text-subhead font-bold text-warm-900">${data.data.leftTitle}</h3>
+                    <span class="px-3.5 py-1 rounded-full slide-text-meta font-bold bg-stone-200 text-stone-700">${data.data.leftBadge}</span>
                   </div>
-                  <div class="space-y-2.5">
+                  <div class="space-y-3.5">
                     ${data.data.leftPoints.map(pt => `
-                      <div class="flex items-start gap-2 text-xs sm:text-sm text-warm-700 font-medium">
-                        <i data-lucide="x" class="w-4 h-4 text-stone-400 mt-0.5 flex-shrink-0"></i>
+                      <div class="flex items-start gap-3 slide-text-body text-warm-700 font-semibold">
+                        <i data-lucide="x" class="w-6 h-6 text-stone-400 mt-1.5 flex-shrink-0"></i>
                         <span>${pt}</span>
                       </div>
                     `).join('')}
@@ -2100,18 +2186,18 @@
                 </div>
               </div>
 
-              <div class="p-5 rounded-2xl bg-white border-2 border-terracotta-500/80 flex flex-col justify-between shadow-md">
+              <div class="p-6 rounded-2xl bg-white border-4 border-terracotta-500 flex flex-col justify-between shadow-lg">
                 <div>
-                  <div class="flex items-center justify-between mb-3.5 pb-2.5 border-b border-terracotta-100">
-                    <h3 class="text-sm sm:text-base font-bold text-terracotta-600 flex items-center gap-2">
-                      <i data-lucide="zap" class="w-4 h-4 text-terracotta-500"></i> ${data.data.rightTitle}
+                  <div class="flex items-center justify-between mb-4 pb-3 border-b-2 border-terracotta-100">
+                    <h3 class="slide-text-subhead font-bold text-terracotta-600 flex items-center gap-2">
+                      <i data-lucide="zap" class="w-7 h-7 text-terracotta-500"></i> ${data.data.rightTitle}
                     </h3>
-                    <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-terracotta-100 text-terracotta-700">${data.data.rightBadge}</span>
+                    <span class="px-3.5 py-1 rounded-full slide-text-meta font-bold bg-terracotta-100 text-terracotta-700">${data.data.rightBadge}</span>
                   </div>
-                  <div class="space-y-2.5">
+                  <div class="space-y-3.5">
                     ${data.data.rightPoints.map(pt => `
-                      <div class="flex items-start gap-2 text-xs sm:text-sm text-warm-900 font-semibold">
-                        <i data-lucide="check" class="w-4 h-4 text-sage-600 mt-0.5 flex-shrink-0 font-bold"></i>
+                      <div class="flex items-start gap-3 slide-text-body text-warm-900 font-bold">
+                        <i data-lucide="check" class="w-6 h-6 text-sage-600 mt-1.5 flex-shrink-0 font-bold"></i>
                         <span>${pt}</span>
                       </div>
                     `).join('')}
@@ -2120,8 +2206,8 @@
               </div>
             </div>
 
-            <div class="p-3.5 rounded-2xl bg-warm-100 border border-warm-200 flex items-center gap-2.5 text-xs sm:text-sm font-bold text-warm-900">
-              <i data-lucide="lightbulb" class="w-4 h-4 text-terracotta-500 flex-shrink-0"></i>
+            <div class="p-5 rounded-2xl bg-warm-100 border-2 border-warm-200 flex items-center gap-3 slide-text-body font-bold text-warm-900 shadow-sm">
+              <i data-lucide="lightbulb" class="w-8 h-8 text-terracotta-500 flex-shrink-0"></i>
               <span>${data.data.insight}</span>
             </div>
           </div>
@@ -2130,40 +2216,40 @@
       // 5. 流程步驟 (Stepper)
       else if (data.type === "stepper") {
         contentHtml = `
-          <div class="flex-1 flex flex-col justify-between space-y-5">
+          <div class="flex-1 flex flex-col justify-between space-y-6">
             <div>
-              <div class="flex items-center gap-2 mb-1.5">
-                <span class="warm-badge bg-sage-100 text-sage-700 border border-sage-200">
+              <div class="flex items-center gap-3 mb-2">
+                <span class="warm-badge bg-sage-100 text-sage-700 border border-sage-300 slide-text-badge px-4 py-1.5">
                   ${data.badge}
                 </span>
-                <span class="text-xs font-bold text-warm-600">${data.module}</span>
+                <span class="slide-text-meta font-bold text-warm-600">${data.module}</span>
               </div>
-              <h2 class="text-2xl sm:text-3xl md:text-4xl font-black text-warm-900 tracking-tight">${data.title}</h2>
-              <p class="text-sm sm:text-base font-bold text-warm-600 mt-1">${data.subtitle}</p>
+              <h2 class="slide-text-title font-black text-warm-900 tracking-tight">${data.title}</h2>
+              <p class="slide-text-subhead font-bold text-warm-600 mt-1">${data.subtitle}</p>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 flex-1 items-stretch">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 flex-1 items-stretch">
               ${data.data.steps.map((st, i) => `
-                <div class="warm-card p-5 flex flex-col justify-between hover:border-terracotta-400 transition">
+                <div class="warm-card p-6 flex flex-col justify-between hover:border-terracotta-400 transition">
                   <div>
-                    <div class="flex items-center justify-between mb-2.5">
-                      <span class="w-7 h-7 rounded-full bg-warm-100 border border-warm-300 text-warm-900 font-black text-xs flex items-center justify-center">
+                    <div class="flex items-center justify-between mb-3.5">
+                      <span class="w-12 h-12 rounded-full bg-warm-100 border-2 border-warm-300 text-warm-900 font-black slide-text-subhead flex items-center justify-center">
                         ${i+1}
                       </span>
-                      <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-terracotta-50 text-terracotta-700 border border-terracotta-200">
+                      <span class="px-3 py-1 rounded-lg slide-text-meta font-bold bg-terracotta-50 text-terracotta-700 border border-terracotta-200">
                         ${st.tag}
                       </span>
                     </div>
-                    <div class="text-xs font-bold text-warm-500 mb-1">${st.phase}</div>
-                    <h3 class="text-sm sm:text-base font-bold text-warm-900 mb-2">${st.title}</h3>
-                    <p class="text-xs sm:text-sm text-warm-700 font-medium leading-relaxed">${st.desc}</p>
+                    <div class="slide-text-meta font-bold text-warm-500 mb-1">${st.phase}</div>
+                    <h3 class="slide-text-subhead font-bold text-warm-900 mb-3">${st.title}</h3>
+                    <p class="slide-text-body text-warm-800 font-semibold leading-relaxed">${st.desc}</p>
                   </div>
                 </div>
               `).join('')}
             </div>
 
-            <div class="p-3.5 rounded-2xl bg-warm-100 border border-warm-200 flex items-center gap-2.5 text-xs sm:text-sm font-bold text-warm-900">
-              <i data-lucide="lightbulb" class="w-4 h-4 text-terracotta-500 flex-shrink-0"></i>
+            <div class="p-5 rounded-2xl bg-warm-100 border-2 border-warm-200 flex items-center gap-3 slide-text-body font-bold text-warm-900 shadow-sm">
+              <i data-lucide="lightbulb" class="w-8 h-8 text-terracotta-500 flex-shrink-0"></i>
               <span>${data.data.insight}</span>
             </div>
           </div>
@@ -2172,70 +2258,72 @@
       // 6. 視覺矩陣 (Visual Matrix)
       else if (data.type === "visual_matrix") {
         contentHtml = `
-          <div class="flex-1 flex flex-col justify-between space-y-5">
+          <div class="flex-1 flex flex-col justify-between space-y-6">
             <div>
-              <div class="flex items-center gap-2 mb-1.5">
-                <span class="warm-badge bg-warm-200 text-warm-800 border border-warm-300">
+              <div class="flex items-center gap-3 mb-2">
+                <span class="warm-badge bg-warm-200 text-warm-800 border border-warm-300 slide-text-badge px-4 py-1.5">
                   ${data.badge}
                 </span>
-                <span class="text-xs font-bold text-warm-600">${data.module}</span>
+                <span class="slide-text-meta font-bold text-warm-600">${data.module}</span>
               </div>
-              <h2 class="text-2xl sm:text-3xl md:text-4xl font-black text-warm-900 tracking-tight">${data.title}</h2>
-              <p class="text-sm sm:text-base font-bold text-warm-600 mt-1">${data.subtitle}</p>
+              <h2 class="slide-text-title font-black text-warm-900 tracking-tight">${data.title}</h2>
+              <p class="slide-text-subhead font-bold text-warm-600 mt-1">${data.subtitle}</p>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-${data.data.cards.length === 3 ? '3' : '2'} gap-4 flex-1 items-stretch">
+            <div class="grid grid-cols-1 md:grid-cols-${data.data.cards.length === 3 ? '3' : '2'} gap-6 flex-1 items-stretch">
               ${data.data.cards.map(c => `
-                <div class="warm-card p-5 flex flex-col justify-between hover:border-terracotta-400 transition">
+                <div class="warm-card p-6 flex flex-col justify-between hover:border-terracotta-400 transition">
                   <div>
-                    <div class="w-9 h-9 rounded-xl bg-warm-100 text-terracotta-600 flex items-center justify-center font-black mb-2.5">
-                      <i data-lucide="${c.icon || 'box'}" class="w-5 h-5"></i>
+                    <div class="w-12 h-12 rounded-xl bg-warm-100 text-terracotta-600 flex items-center justify-center font-black mb-3.5">
+                      <i data-lucide="${c.icon || 'box'}" class="w-7 h-7"></i>
                     </div>
-                    <h3 class="text-sm sm:text-base font-bold text-warm-900 mb-1.5">${c.title}</h3>
-                    <p class="text-xs sm:text-sm text-warm-700 font-medium leading-relaxed">${c.desc}</p>
+                    <h3 class="slide-text-subhead font-bold text-warm-900 mb-2">${c.title}</h3>
+                    <p class="slide-text-body text-warm-800 font-semibold leading-relaxed">${c.desc}</p>
                   </div>
                 </div>
               `).join('')}
             </div>
 
-            <div class="p-3.5 rounded-2xl bg-warm-100 border border-warm-200 flex items-center gap-2.5 text-xs sm:text-sm font-bold text-warm-900">
-              <i data-lucide="lightbulb" class="w-4 h-4 text-terracotta-500 flex-shrink-0"></i>
+            <div class="p-5 rounded-2xl bg-warm-100 border-2 border-warm-200 flex items-center gap-3 slide-text-body font-bold text-warm-900 shadow-sm">
+              <i data-lucide="lightbulb" class="w-8 h-8 text-terracotta-500 flex-shrink-0"></i>
               <span>${data.data.insight}</span>
             </div>
           </div>
         `;
       }
-      // 7. 流程總覽 (Flow Chart)
+      // 7. 流程總覽 (Flow Chart) - 升級為 3x2 格局，確保 28pt 大字體絕不擁擠
       else if (data.type === "flow_chart") {
         contentHtml = `
-          <div class="flex-1 flex flex-col justify-between space-y-5">
+          <div class="flex-1 flex flex-col justify-between space-y-6">
             <div>
-              <div class="flex items-center gap-2 mb-1.5">
-                <span class="warm-badge bg-sage-100 text-sage-700 border border-sage-200">
+              <div class="flex items-center gap-3 mb-2">
+                <span class="warm-badge bg-sage-100 text-sage-700 border border-sage-300 slide-text-badge px-4 py-1.5">
                   ${data.badge}
                 </span>
-                <span class="text-xs font-bold text-warm-600">${data.module}</span>
+                <span class="slide-text-meta font-bold text-warm-600">${data.module}</span>
               </div>
-              <h2 class="text-2xl sm:text-3xl md:text-4xl font-black text-warm-900 tracking-tight">${data.title}</h2>
-              <p class="text-sm sm:text-base font-bold text-warm-600 mt-1">${data.subtitle}</p>
+              <h2 class="slide-text-title font-black text-warm-900 tracking-tight">${data.title}</h2>
+              <p class="slide-text-subhead font-bold text-warm-600 mt-1">${data.subtitle}</p>
             </div>
 
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 flex-1 items-stretch">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 flex-1 items-stretch">
               ${data.data.flow.map(f => `
-                <div class="warm-card p-3.5 flex flex-col justify-between text-center hover:border-terracotta-400 transition">
+                <div class="warm-card p-6 flex flex-col justify-between text-left hover:border-terracotta-400 transition">
                   <div>
-                    <div class="w-7 h-7 mx-auto rounded-full bg-terracotta-100 text-terracotta-700 font-black text-xs flex items-center justify-center mb-2 border border-terracotta-200">
-                      ${f.step}
+                    <div class="flex items-center gap-3 mb-3">
+                      <div class="w-10 h-10 rounded-full bg-terracotta-100 text-terracotta-700 font-black slide-text-meta flex items-center justify-center border-2 border-terracotta-300 flex-shrink-0">
+                        ${f.step}
+                      </div>
+                      <h3 class="slide-text-subhead font-bold text-warm-900">${f.name}</h3>
                     </div>
-                    <h3 class="text-xs sm:text-sm font-bold text-warm-900 mb-1">${f.name}</h3>
-                    <p class="text-[11px] text-warm-600 leading-tight">${f.desc}</p>
+                    <p class="slide-text-body text-warm-800 font-semibold leading-relaxed">${f.desc}</p>
                   </div>
                 </div>
               `).join('')}
             </div>
 
-            <div class="p-3.5 rounded-2xl bg-warm-100 border border-warm-200 flex items-center gap-2.5 text-xs sm:text-sm font-bold text-warm-900">
-              <i data-lucide="lightbulb" class="w-4 h-4 text-terracotta-500 flex-shrink-0"></i>
+            <div class="p-5 rounded-2xl bg-warm-100 border-2 border-warm-200 flex items-center gap-3 slide-text-body font-bold text-warm-900 shadow-sm">
+              <i data-lucide="lightbulb" class="w-8 h-8 text-terracotta-500 flex-shrink-0"></i>
               <span>${data.data.insight}</span>
             </div>
           </div>
@@ -2244,33 +2332,33 @@
       // 8. 結論 (Conclusion)
       else if (data.type === "conclusion") {
         contentHtml = `
-          <div class="flex-1 flex flex-col justify-between space-y-5">
+          <div class="flex-1 flex flex-col justify-between space-y-6">
             <div>
-              <span class="warm-badge bg-terracotta-500 text-white font-bold mb-1.5">
+              <span class="warm-badge bg-terracotta-500 text-white font-bold mb-2 slide-text-badge px-4 py-1.5">
                 ${data.badge}
               </span>
-              <h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-warm-900 tracking-tight mt-1">${data.title}</h2>
-              <p class="text-sm sm:text-base font-bold text-terracotta-600 mt-1">${data.subtitle}</p>
+              <h2 class="slide-text-hero font-black text-warm-900 tracking-tight mt-1">${data.title}</h2>
+              <p class="slide-text-subhead font-bold text-terracotta-600 mt-1">${data.subtitle}</p>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 flex-1 items-stretch">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 flex-1 items-stretch">
               ${data.data.actions.map(act => `
-                <div class="warm-card p-5 flex flex-col justify-between border-t-4 border-terracotta-500">
+                <div class="warm-card p-6 flex flex-col justify-between border-t-8 border-terracotta-500">
                   <div>
-                    <span class="text-xs font-black text-terracotta-600 tracking-wider">${act.step}</span>
-                    <h3 class="text-sm sm:text-base font-bold text-warm-900 mt-1 mb-2.5">${act.title}</h3>
-                    <p class="text-xs sm:text-sm text-warm-700 font-medium leading-relaxed">${act.desc}</p>
+                    <span class="slide-text-meta font-black text-terracotta-600 tracking-wider">${act.step}</span>
+                    <h3 class="slide-text-subhead font-bold text-warm-900 mt-1 mb-3">${act.title}</h3>
+                    <p class="slide-text-body text-warm-800 font-semibold leading-relaxed">${act.desc}</p>
                   </div>
-                  <div class="mt-4 pt-2.5 border-t border-warm-100 text-xs font-bold text-sage-600 flex items-center gap-1.5">
-                    <i data-lucide="check-circle" class="w-4 h-4"></i> 落地執行目標
+                  <div class="mt-5 pt-3 border-t border-warm-200 slide-text-meta font-bold text-sage-700 flex items-center gap-2">
+                    <i data-lucide="check-circle" class="w-6 h-6"></i> 實戰落實目標
                   </div>
                 </div>
               `).join('')}
             </div>
 
-            <div class="p-4 rounded-2xl bg-terracotta-50 border border-terracotta-200 text-center">
-              <p class="text-sm sm:text-base font-black text-terracotta-800">${data.data.insight}</p>
-              <p class="text-xs text-warm-600 mt-0.5">全課 50 頁展示完畢 ｜ 祝各位同學成功打造個人專屬 AI Agent 團隊！</p>
+            <div class="p-6 rounded-2xl bg-terracotta-50 border-2 border-terracotta-300 text-center shadow-sm">
+              <p class="slide-text-subhead font-black text-terracotta-900">${data.data.insight}</p>
+              <p class="slide-text-meta text-warm-700 mt-1.5">全課 50 頁展示完畢 ｜ 祝各位同學成功打造個人專屬 AI Agent 團隊！</p>
             </div>
           </div>
         `;
@@ -2328,54 +2416,27 @@
 
     // 真正滿版全螢幕控制（零邊框、撐滿 100vw x 100vh）
     function toggleFullScreen(forceState) {
-      const doc = document.documentElement;
       const isCurrentlyFs = document.body.classList.contains("is-fullscreen");
       const shouldFs = (forceState !== undefined) ? forceState : !isCurrentlyFs;
 
       if (shouldFs) {
-        // 進入全螢幕 API
-        if (doc.requestFullscreen) {
-          doc.requestFullscreen().catch(() => {});
-        } else if (doc.webkitRequestFullscreen) {
-          doc.webkitRequestFullscreen();
-        } else if (doc.msRequestFullscreen) {
-          doc.msRequestFullscreen();
-        }
         document.body.classList.add("is-fullscreen");
-      } else {
-        // 退出全螢幕 API
-        if (document.fullscreenElement || document.webkitFullscreenElement) {
-          if (document.exitFullscreen) {
-            document.exitFullscreen().catch(() => {});
-          } else if (document.webkitExitFullscreen) {
-            document.webkitExitFullscreen();
-          }
+        if (document.documentElement.requestFullscreen && !document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(() => {});
         }
+      } else {
         document.body.classList.remove("is-fullscreen");
+        if (document.exitFullscreen && document.fullscreenElement) {
+          document.exitFullscreen().catch(() => {});
+        }
       }
-      // 重新整理圖標
-      lucide.createIcons();
     }
 
-    // 監聽全螢幕變化事件以保持狀態同步
     document.addEventListener("fullscreenchange", () => {
       if (document.fullscreenElement) {
         document.body.classList.add("is-fullscreen");
       } else {
         document.body.classList.remove("is-fullscreen");
-      }
-      lucide.createIcons();
-    });
-
-    // 全螢幕懸浮控制條滑鼠移動自動喚醒
-    let fsTimeout;
-    document.addEventListener("mousemove", () => {
-      if (document.body.classList.contains("is-fullscreen")) {
-        document.body.classList.add("show-controls");
-        clearTimeout(fsTimeout);
-        fsTimeout = setTimeout(() => {
-          document.body.classList.remove("show-controls");
-        }, 3000);
       }
     });
 
@@ -2420,14 +2481,14 @@
     function buildDrawerList() {
       const listContainer = document.getElementById("drawer-list");
       listContainer.innerHTML = slidesData.map((s, idx) => `
-        <div onclick="goToSlide(${idx})" class="p-3 rounded-xl bg-white border border-warm-200 hover:border-terracotta-500 hover:shadow-sm cursor-pointer transition flex items-center justify-between group">
+        <div onclick="goToSlide(${idx})" class="p-3.5 rounded-xl bg-white border border-warm-200 hover:border-terracotta-500 hover:shadow-sm cursor-pointer transition flex items-center justify-between group">
           <div class="flex items-center gap-3 min-w-0">
-            <span class="w-7 h-7 rounded-lg bg-warm-100 text-warm-900 font-mono text-xs font-black flex items-center justify-center group-hover:bg-terracotta-500 group-hover:text-white transition flex-shrink-0">
+            <span class="w-8 h-8 rounded-lg bg-warm-100 text-warm-900 font-mono text-sm font-black flex items-center justify-center group-hover:bg-terracotta-500 group-hover:text-white transition flex-shrink-0">
               ${String(idx + 1).padStart(2, '0')}
             </span>
             <div class="min-w-0">
-              <div class="text-xs sm:text-sm font-bold text-warm-900 group-hover:text-terracotta-600 transition truncate">${s.title}</div>
-              <div class="text-[11px] text-warm-500 truncate">${s.module}</div>
+              <div class="text-sm font-bold text-warm-900 group-hover:text-terracotta-600 transition truncate">${s.title}</div>
+              <div class="text-xs text-warm-500 font-semibold truncate">${s.module}</div>
             </div>
           </div>
           <i data-lucide="chevron-right" class="w-4 h-4 text-warm-400 group-hover:text-terracotta-500 transition flex-shrink-0"></i>
