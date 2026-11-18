@@ -261,16 +261,13 @@
       </div>
     </div>
 
-    <!-- 右側功能按鈕 -->
-    <div class="flex items-center gap-2 md:gap-3 flex-shrink-0">
-      <a href="index.html" class="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-warm-300 bg-white hover:bg-warm-100 text-xs md:text-sm font-bold text-warm-800 transition shadow-sm" title="返回第一講 (觀念篇 50 頁)">
-        <i data-lucide="arrow-left-circle" class="w-4 h-4 text-warm-600"></i>
-        <span class="hidden sm:inline">第一講 (觀念篇)</span>
-      </a>
-      <a href="part2.html" class="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-terracotta-300 bg-terracotta-50 hover:bg-terracotta-100 text-xs md:text-sm font-bold text-terracotta-800 transition shadow-sm" title="前往第二講 (實務篇 50 頁)">
-        <i data-lucide="sparkles" class="w-4 h-4 text-terracotta-600"></i>
-        <span class="hidden sm:inline">第二講 (實務篇)</span>
-      </a>
+        <!-- 右側功能按鈕 (全三講切換) -->
+    <div class="flex items-center gap-1.5 md:gap-2 flex-shrink-0">
+      <div class="flex items-center gap-1 bg-warm-100/80 p-1 rounded-2xl border border-warm-200">
+        <a href="index.html" class="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-warm-300 bg-white hover:bg-warm-100 text-warm-800 text-xs md:text-sm font-bold transition shadow-sm" title="第一講：觀念與架構篇 (50頁)"><i data-lucide="book-open" class="w-4 h-4 text-warm-600"></i><span class="hidden sm:inline">第一講 (觀念篇)</span></a>
+        <a href="part2.html" class="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-terracotta-400 bg-terracotta-100 text-terracotta-800 text-xs md:text-sm font-bold transition shadow-sm" title="第二講：實務操作篇 (50頁)"><i data-lucide="wrench" class="w-4 h-4 text-warm-600"></i><span class="hidden sm:inline">第二講 (實務篇)</span></a>
+        <a href="part3.html" class="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-warm-300 bg-white hover:bg-warm-100 text-warm-800 text-xs md:text-sm font-bold transition shadow-sm" title="第三講：商業增長篇 (50頁)"><i data-lucide="trending-up" class="w-4 h-4 text-warm-600"></i><span class="hidden sm:inline">第三講 (增長篇)</span></a>
+      </div>
       <button onclick="toggleDrawer()" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-warm-300 bg-warm-50 hover:bg-white text-xs md:text-sm font-bold text-warm-800 transition shadow-sm">
         <i data-lucide="layers" class="w-4 h-4 text-terracotta-500"></i>
         <span class="hidden sm:inline">50 頁目錄</span>
@@ -913,7 +910,7 @@
     "id": 18,
     "module": "模組 2 · 爆款內容與流量轉化",
     "badge": "模組總結 · 18/50",
-    "title": "圖解：爆款流量轉化全流程神經網絡",
+    "title": "圖解：爆款流量轉化全流程神經網路",
     "subtitle": "六大步驟環環相扣，讓社群曝光源源不絕匯聚至店鋪收銀台",
     "type": "flow_chart",
     "data": {
@@ -1630,7 +1627,7 @@
     "module": "模組 5 · 自動化工作流實操",
     "badge": "實務情境 1 · 39/50",
     "title": "情境 1：社群發文全自動排程流水線",
-    "subtitle": "從 Notion 靈感草稿庫到多平台精確定時發布，一人搞定每日社群矩陣",
+    "subtitle": "從 Notion 靈感草稿庫到多平台精確定時發布，一人搞定每日多平台社群發布",
     "type": "stepper",
     "data": {
       "insight": "創作者的靈感常常在洗澡或散步時湧現，先把點子記下來，剩下的排版與發布交給 Agent。",
@@ -2288,7 +2285,7 @@
           </div>
         `;
       }
-      // 6. 視覺矩陣 (Visual Matrix)
+      // 6. 視覺化佈局 (Visual Matrix)
       else if (data.type === "visual_matrix") {
         contentHtml = `
           <div class="flex-1 flex flex-col justify-between space-y-6">
