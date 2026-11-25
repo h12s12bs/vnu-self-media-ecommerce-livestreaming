@@ -1,0 +1,2463 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agentic AI 自媒體電商應用 (四)：品牌專題實作、表單金流驗證與跨科系合作實踐 ｜ 萬能科技大學 邱俊維 博士</title>
+  
+  <!-- Google Fonts: Inter & Noto Sans TC -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Noto Sans TC"', 'Inter', 'sans-serif'],
+          },
+          colors: {
+            warm: {
+              50: '#FAF8F5',
+              100: '#F4EFE6',
+              200: '#EAE4D6',
+              300: '#DCD4C2',
+              400: '#C2B69D',
+              500: '#9E9075',
+              600: '#7D7056',
+              700: '#5E533E',
+              800: '#41392A',
+              900: '#262016',
+            },
+            terracotta: {
+              50: '#FFF5F2',
+              100: '#FFE8E1',
+              200: '#FFD2C4',
+              300: '#FFAF97',
+              400: '#F98160',
+              500: '#E76F51',
+              600: '#CE5334',
+              700: '#A93B20',
+              800: '#87301B',
+              900: '#6E2A19',
+            },
+            sage: {
+              50: '#F4F7F5',
+              100: '#E3EBE6',
+              200: '#C5D7CC',
+              300: '#9FBFA9',
+              400: '#75A384',
+              500: '#2A9D8F',
+              600: '#228176',
+              700: '#1C665E',
+              800: '#18514B',
+              900: '#14423D',
+            },
+            amberwood: {
+              50: '#FDF9F0',
+              100: '#FBF0DD',
+              500: '#DDA15E',
+              600: '#BC6C25',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    :root {
+      /* 大字體標準：依據要求「字全部都太小至少28點以上」 */
+      --slide-badge-size: 22pt;
+      --slide-meta-size: 22pt;
+      --slide-body-size: 28pt;      /* 內文最低 28 點 (28pt ≈ 37.33px) */
+      --slide-subhead-size: 32pt;   /* 卡片標題 32 點 */
+      --slide-title-size: 44pt;     /* 投影片標題 44 點 */
+      --slide-hero-size: 58pt;      /* 首頁封面大標題 58 點 */
+      --slide-stat-size: 62pt;      /* 核心數據 62 點 */
+    }
+
+    @media (max-width: 1024px) {
+      :root {
+        --slide-badge-size: 16pt;
+        --slide-meta-size: 16pt;
+        --slide-body-size: 22pt;
+        --slide-subhead-size: 26pt;
+        --slide-title-size: 34pt;
+        --slide-hero-size: 44pt;
+        --slide-stat-size: 50pt;
+      }
+    }
+
+    @media (max-width: 640px) {
+      :root {
+        --slide-badge-size: 14pt;
+        --slide-meta-size: 14pt;
+        --slide-body-size: 18pt;
+        --slide-subhead-size: 22pt;
+        --slide-title-size: 28pt;
+        --slide-hero-size: 34pt;
+        --slide-stat-size: 40pt;
+      }
+    }
+
+    html, body {
+      background-color: #FAF8F5;
+      color: #262016;
+      touch-action: pan-y;
+      -webkit-tap-highlight-color: transparent;
+      margin: 0;
+      padding: 0;
+      font-size: 16px;
+    }
+
+    /* 投影片專屬排版字級工具 */
+    .slide-text-badge {
+      font-size: var(--slide-badge-size) !important;
+      line-height: 1.35 !important;
+      font-weight: 700 !important;
+    }
+    .slide-text-meta {
+      font-size: var(--slide-meta-size) !important;
+      line-height: 1.35 !important;
+      font-weight: 700 !important;
+    }
+    .slide-text-body {
+      font-size: var(--slide-body-size) !important;
+      line-height: 1.5 !important;
+      font-weight: 600 !important;
+    }
+    .slide-text-subhead {
+      font-size: var(--slide-subhead-size) !important;
+      line-height: 1.3 !important;
+      font-weight: 800 !important;
+    }
+    .slide-text-title {
+      font-size: var(--slide-title-size) !important;
+      line-height: 1.2 !important;
+      font-weight: 900 !important;
+    }
+    .slide-text-hero {
+      font-size: var(--slide-hero-size) !important;
+      line-height: 1.15 !important;
+      font-weight: 900 !important;
+    }
+    .slide-text-stat {
+      font-size: var(--slide-stat-size) !important;
+      line-height: 1.05 !important;
+      font-weight: 900 !important;
+    }
+
+    .warm-card {
+      background: #FFFFFF;
+      border: 2px solid #EAE4D6;
+      box-shadow: 0 4px 20px -2px rgba(56, 48, 36, 0.06);
+      border-radius: 1.5rem;
+    }
+    .warm-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.35rem 1rem;
+      border-radius: 9999px;
+      font-weight: 700;
+    }
+    
+    /* ========================================= */
+    /* 真正無邊框滿版全螢幕 CSS (Pure Edge-to-Edge) */
+    /* ========================================= */
+    body.is-fullscreen {
+      overflow: hidden !important;
+      background-color: #FAF8F5 !important;
+    }
+    body.is-fullscreen header,
+    body.is-fullscreen footer,
+    body.is-fullscreen #progress-bar-container {
+      display: none !important;
+    }
+    body.is-fullscreen #main-deck-area {
+      padding: 0 !important;
+      margin: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      max-width: 100vw !important;
+      max-height: 100vh !important;
+      display: flex !important;
+      align-items: stretch !important;
+      justify-content: center !important;
+    }
+    body.is-fullscreen #slide-wrapper {
+      width: 100vw !important;
+      height: 100vh !important;
+      max-width: 100vw !important;
+      max-height: 100vh !important;
+      border-radius: 0 !important;
+      border: none !important;
+      box-shadow: none !important;
+      margin: 0 !important;
+      padding: 3rem 4rem 5rem 4rem !important;
+      box-sizing: border-box !important;
+      overflow-y: auto !important;
+    }
+    @media (max-width: 768px) {
+      body.is-fullscreen #slide-wrapper {
+        padding: 1.5rem 1.25rem 5rem 1.25rem !important;
+      }
+    }
+
+    /* 全螢幕浮動控制條 (滑鼠移到底部浮現) */
+    #fs-floating-bar {
+      display: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    body.is-fullscreen #fs-floating-bar {
+      display: flex;
+    }
+    body.is-fullscreen:hover #fs-floating-bar,
+    body.is-fullscreen.show-controls #fs-floating-bar {
+      opacity: 1;
+    }
+
+    /* 滾動條樣式 */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #FAF8F5;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #DCD4C2;
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col font-sans select-none antialiased" id="body-container">
+
+  <!-- 頂部進度條 -->
+  <div class="w-full h-2 bg-warm-200 sticky top-0 z-50" id="progress-bar-container">
+    <div id="progress-bar" class="h-full bg-terracotta-500 transition-all duration-300" style="width: 2%;"></div>
+  </div>
+
+  <!-- 頂部導航列 (全螢幕時隱藏) -->
+  <header class="w-full px-4 md:px-8 py-3.5 flex items-center justify-between border-b border-warm-200 bg-white/95 backdrop-blur sticky top-2 z-40">
+    <div class="flex items-center gap-3 min-w-0">
+      <div class="w-10 h-10 rounded-xl bg-terracotta-500 text-white flex items-center justify-center font-black text-sm shadow-sm flex-shrink-0">
+        AI 4
+      </div>
+      <div class="min-w-0">
+        <div class="flex items-center gap-2">
+          <h1 class="text-sm md:text-base font-black tracking-tight text-warm-900 truncate">Agentic AI 自媒體電商應用 (四)</h1>
+          <span class="hidden lg:inline-block px-2 py-0.5 rounded text-[11px] font-extrabold bg-terracotta-100 text-terracotta-700 border border-terracotta-200">專題實踐篇</span>
+        </div>
+        <p class="text-xs md:text-sm text-warm-600 font-bold truncate" id="header-module-label">模組 1 · 品牌企劃與商業模式起手式</p>
+      </div>
+    </div>
+
+                <!-- 右側功能按鈕 (全四講切換) -->
+    <div class="flex items-center gap-1 md:gap-1.5 flex-shrink-0">
+      <div class="flex items-center gap-1 bg-warm-100/80 p-1 rounded-2xl border border-warm-200">
+        <a href="index.html" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-warm-300 bg-white hover:bg-warm-100 text-warm-800 text-xs md:text-sm font-bold transition shadow-sm" title="第一講：觀念與架構篇 (50頁)"><i data-lucide="book-open" class="w-4 h-4 text-warm-600"></i><span class="hidden sm:inline">第一講</span></a>
+        <a href="part2.html" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-warm-300 bg-white hover:bg-warm-100 text-warm-800 text-xs md:text-sm font-bold transition shadow-sm" title="第二講：實務操作篇 (50頁)"><i data-lucide="wrench" class="w-4 h-4 text-warm-600"></i><span class="hidden sm:inline">第二講</span></a>
+        <a href="part3.html" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-warm-300 bg-white hover:bg-warm-100 text-warm-800 text-xs md:text-sm font-bold transition shadow-sm" title="第三講：商業增長篇 (50頁)"><i data-lucide="trending-up" class="w-4 h-4 text-warm-600"></i><span class="hidden sm:inline">第三講</span></a>
+        <a href="part4.html" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-terracotta-400 bg-terracotta-100 text-terracotta-800 text-xs md:text-sm font-bold transition shadow-sm" title="第四講：專題實踐篇 (50頁)"><i data-lucide="sparkles" class="w-4 h-4 text-warm-600"></i><span class="hidden sm:inline">第四講</span></a>
+      </div>
+      <button onclick="toggleDrawer()" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-warm-300 bg-warm-50 hover:bg-white text-xs md:text-sm font-bold text-warm-800 transition shadow-sm">
+        <i data-lucide="layers" class="w-4 h-4 text-terracotta-500"></i>
+        <span class="hidden sm:inline">50 頁目錄</span>
+      </button>
+      <button onclick="toggleFullScreen()" class="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-terracotta-500 hover:bg-terracotta-600 text-xs md:text-sm font-bold text-white transition shadow-sm" title="進入純滿版全螢幕 (F)">
+        <i data-lucide="maximize" class="w-4 h-4"></i>
+        <span>全螢幕播放</span>
+      </button>
+      <div class="h-5 w-px bg-warm-300 mx-1"></div>
+      <span class="text-xs md:text-sm font-black text-warm-800 tabular-nums px-1" id="page-counter">01 / 50</span>
+    </div>
+  </header>
+
+  <!-- 主幻燈片區域 (寬幅擴充至 1500px，呈現大字體震撼視覺) -->
+  <main class="flex-1 w-full flex items-center justify-center p-3 sm:p-6 md:p-10" id="main-deck-area">
+    <div id="slide-wrapper" class="w-full max-w-[1500px] bg-white rounded-3xl border-2 border-warm-200 shadow-md p-6 sm:p-10 md:p-14 flex flex-col justify-between min-h-[640px] md:min-h-[720px] transition-all duration-200">
+      <!-- 內容由 JavaScript 動態渲染 -->
+    </div>
+  </main>
+
+  <!-- 底部固定控制列 (一般模式，全螢幕時隱藏) -->
+  <footer class="w-full px-5 md:px-10 py-4 border-t border-warm-200 bg-white/95 backdrop-blur flex items-center justify-between text-sm text-warm-700 sticky bottom-0 z-40">
+    <div class="hidden sm:flex items-center gap-4 text-warm-600 font-medium">
+      <span class="flex items-center gap-1.5"><kbd class="px-2.5 py-1 bg-warm-100 border border-warm-300 rounded-lg font-mono text-xs font-bold">←</kbd> <kbd class="px-2.5 py-1 bg-warm-100 border border-warm-300 rounded-lg font-mono text-xs font-bold">→</kbd> 翻頁</span>
+      <span>• 手機支援左右滑動翻頁</span>
+      <span>• 按 <kbd class="px-2.5 py-1 bg-warm-100 border border-warm-300 rounded-lg font-mono text-xs font-bold">F</kbd> 鍵無邊框滿版全螢幕</span>
+    </div>
+    <div class="text-sm sm:hidden text-warm-600 font-bold">
+      👈 左右滑動螢幕翻頁 👉
+    </div>
+    <div class="flex items-center gap-3">
+      <button onclick="prevSlide()" class="px-5 py-2.5 rounded-xl border-2 border-warm-300 bg-white hover:bg-warm-100 text-warm-900 font-bold flex items-center gap-1.5 transition shadow-sm active:scale-95 disabled:opacity-40" id="prev-btn">
+        <i data-lucide="chevron-left" class="w-5 h-5"></i> 上一頁
+      </button>
+      <button onclick="nextSlide()" class="px-6 py-2.5 rounded-xl bg-terracotta-500 hover:bg-terracotta-600 text-white font-bold flex items-center gap-1.5 transition shadow-sm active:scale-95 disabled:opacity-40" id="next-btn">
+        下一頁 <i data-lucide="chevron-right" class="w-5 h-5"></i>
+      </button>
+    </div>
+  </footer>
+
+  <!-- ========================================= -->
+  <!-- 全螢幕專屬懸浮控制條 (零邊框滿版時浮動顯示) -->
+  <!-- ========================================= -->
+  <div id="fs-floating-bar" class="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50 bg-warm-900/90 backdrop-blur-md text-white px-6 py-3 rounded-full shadow-2xl items-center gap-5 text-sm md:text-base font-bold border border-warm-700/70">
+    <span class="text-warm-300 tabular-nums font-black" id="fs-page-counter">01 / 50</span>
+    <div class="h-4 w-px bg-warm-700"></div>
+    <button onclick="prevSlide()" class="hover:text-terracotta-400 flex items-center gap-1.5 transition">
+      <i data-lucide="chevron-left" class="w-5 h-5"></i> 上一頁
+    </button>
+    <button onclick="nextSlide()" class="hover:text-terracotta-400 flex items-center gap-1.5 transition">
+      下一頁 <i data-lucide="chevron-right" class="w-5 h-5"></i>
+    </button>
+    <div class="h-4 w-px bg-warm-700"></div>
+    <button onclick="toggleDrawer()" class="hover:text-terracotta-400 flex items-center gap-1.5 transition">
+      <i data-lucide="layers" class="w-5 h-5"></i> 目錄
+    </button>
+    <button onclick="toggleFullScreen()" class="hover:text-terracotta-400 flex items-center gap-1.5 transition text-warm-300">
+      <i data-lucide="minimize" class="w-5 h-5"></i> 退出全螢幕 (Esc)
+    </button>
+  </div>
+
+  <!-- 50 頁目錄彈出抽屜 -->
+  <div id="drawer-backdrop" onclick="toggleDrawer(false)" class="fixed inset-0 bg-warm-900/50 backdrop-blur-sm z-50 hidden transition-opacity"></div>
+  <div id="overview-drawer" class="fixed right-0 top-0 bottom-0 w-full max-w-md bg-warm-50 shadow-2xl z-50 transform translate-x-full transition-transform duration-300 flex flex-col border-l border-warm-200">
+    <div class="p-4 border-b border-warm-200 flex items-center justify-between bg-white">
+      <div class="flex items-center gap-2">
+        <i data-lucide="layers" class="w-5 h-5 text-terracotta-500"></i>
+        <h2 class="text-base font-bold text-warm-900">50 頁簡報導覽清單</h2>
+      </div>
+      <button onclick="toggleDrawer(false)" class="p-1.5 rounded-lg hover:bg-warm-100 text-warm-600">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+    <div class="flex-1 overflow-y-auto p-3 space-y-2.5" id="drawer-list">
+      <!-- 目錄項動態渲染 -->
+    </div>
+  </div>
+
+  <script>
+    const slidesData = [
+  {
+    "id": 1,
+    "module": "模組 1 · 品牌企劃與商業模式起手式",
+    "badge": "課程首頁 · 01/50",
+    "title": "Agentic AI 自媒體電商應用 (四)",
+    "subtitle": "品牌專題實作、表單金流驗證與校園跨科系合作實踐",
+    "type": "hero",
+    "data": {
+      "tagline": "萬能科技大學 企業管理系 ｜ 第四講 · 品牌專題實作與跨域實踐篇 ｜ 授課教師：邱俊維 博士",
+      "stats": [
+        {
+          "num": "全實戰",
+          "label": "動手完成專屬獨立自媒體品牌網站"
+        },
+        {
+          "num": "零門檻",
+          "label": "表單自動發信至信箱極速接單成單"
+        },
+        {
+          "num": "跨科系",
+          "label": "串聯餐飲、電商、寵物與電子專業"
+        }
+      ],
+      "coreConcept": "從前三講的觀念、工具與全域增長，第四講邁入『專題實踐與跨域產學合作』！一步一步親手規劃你的品牌，完成真實商業運作。"
+    }
+  },
+  {
+    "id": 2,
+    "module": "模組 1 · 品牌企劃與商業模式起手式",
+    "badge": "學習地圖 · 02/50",
+    "title": "今日專案實踐地圖：從概念到真實接單",
+    "subtitle": "四小時內打破紙上談兵，帶你走完創業專題五大核心關鍵",
+    "type": "stepper",
+    "data": {
+      "insight": "做中學是掌握商業運營最快的方式。今天我們不寫複雜程式，只專注於創造真實價值。",
+      "steps": [
+        {
+          "phase": "階段一",
+          "title": "品牌誕生",
+          "tag": "30 分鐘",
+          "desc": "決定公司品牌名稱、寫下動人品牌理念與核心價值。"
+        },
+        {
+          "phase": "階段二",
+          "title": "商品塑形",
+          "tag": "45 分鐘",
+          "desc": "完成三項主力商品/服務的照片視覺、特色與定價階梯。"
+        },
+        {
+          "phase": "階段三",
+          "title": "表單金流",
+          "tag": "30 分鐘",
+          "desc": "建立線上表單並串接個人電子郵件，實現填表即通知。"
+        },
+        {
+          "phase": "階段四",
+          "title": "跨域合作",
+          "tag": "45 分鐘",
+          "desc": "撰寫校園四大科系拜訪企劃案，打造校園聯名實體產品。"
+        }
+      ]
+    }
+  },
+  {
+    "id": 3,
+    "module": "模組 1 · 品牌企劃與商業模式起手式",
+    "badge": "品牌命名 · 03/50",
+    "title": "公司命名學：好記、好聽又有力量",
+    "subtitle": "一個優秀的品牌名稱，能替你省下至少一半的行銷推廣費用",
+    "type": "split-cards",
+    "data": {
+      "insight": "好的名字是顧客對你的第一印象。避免複雜難唸的生僻字，追求一聽就懂的親和力。",
+      "cards": [
+        {
+          "title": "黃金命名三原則",
+          "points": [
+            "節奏感強烈：中文以 2 到 4 個字為佳，雙音節或三音節最順口。",
+            "直接關聯情境：名稱自帶畫面感，暗示產品能帶來的幸福體驗。",
+            "好記好搜尋：避免同音異字困擾，在 Google 與社群上一搜即中。"
+          ]
+        },
+        {
+          "title": "資產保護與檢查清單",
+          "points": [
+            "網域名稱查詢：檢查 .com 或 .tw 網址是否仍可註冊購買。",
+            "社群帳號統一：確認 IG、Facebook 與 LINE 官方帳號 ID 可同步。",
+            "商標檢索避雷：透過智財局商標檢索系統，確保無近似衝突品牌。"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": 4,
+    "module": "模組 1 · 品牌企劃與商業模式起手式",
+    "badge": "核心理念 · 04/50",
+    "title": "黃金圈法則：為什麼大家要向你購買？",
+    "subtitle": "Simon Sinek 黃金圈思維：人們買的不是你做什麼，而是你為什麼而做",
+    "type": "cards-3",
+    "data": {
+      "insight": "冷冰冰的功能誰都能抄襲，但唯有真摯動人的品牌故事與初心，能建立無可取代的忠誠度。",
+      "cards": [
+        {
+          "tag": "核心 WHY",
+          "title": "品牌初心與使命",
+          "desc": "我們為什麼創辦這家公司？我們希望為世界帶來什麼改變？讓顧客看見你最深層的熱情與堅持。"
+        },
+        {
+          "tag": "方法 HOW",
+          "title": "獨特承諾與做法",
+          "desc": "我們用什麼與眾不同的標準對待產品？例如：堅持無添加、在地小農產地直送或 100% 手工調製。"
+        },
+        {
+          "tag": "結果 WHAT",
+          "title": "具體產品與服務",
+          "desc": "最後才展示實體商品或專業服務。此時產品已承載了理念，不再只是比拼價格的標籤。"
+        }
+      ]
+    }
+  },
+  {
+    "id": 5,
+    "module": "模組 1 · 品牌企劃與商業模式起手式",
+    "badge": "受眾錨定 · 05/50",
+    "title": "顧客畫像 (Persona)：你的產品為誰而生？",
+    "subtitle": "不要試圖討好所有人！精準鎖定核心受眾，才能激發最強烈的情感共鳴",
+    "type": "quad-grid",
+    "data": {
+      "insight": "當你試圖賣給所有人時，最終往往誰都吸引不了。把焦點縮小，把價值放大。",
+      "quads": [
+        {
+          "title": "基本人口統計",
+          "points": [
+            "年齡區間與生活身分",
+            "主要居住地區與生活圈",
+            "每月可自由支配開銷預算"
+          ]
+        },
+        {
+          "title": "生活日常場景",
+          "points": [
+            "平日通勤與下課放學動線",
+            "週末休閒愛好的消費習慣",
+            "最常滑的手機社群與話題"
+          ]
+        },
+        {
+          "title": "深層困擾與痛點",
+          "points": [
+            "現有市售商品無法滿足之處",
+            "擔心踩雷或品質不穩的焦慮",
+            "缺乏儀式感或情感慰藉的渴望"
+          ]
+        },
+        {
+          "title": "理想生活願景",
+          "points": [
+            "購買商品後想展現的個人風格",
+            "與毛孩、家人或伴侶分享的幸福感",
+            "追求精緻且高性價比的生活品味"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": 6,
+    "module": "模組 1 · 品牌企劃與商業模式起手式",
+    "badge": "商業畫布 · 06/50",
+    "title": "精實商業畫布：一張紙看清獲利邏輯",
+    "subtitle": "快速梳理自媒體電商營運架構，確保商業模式具備長期可持續性",
+    "type": "cards-3",
+    "data": {
+      "insight": "商業模式的核心在於『價值創造』與『價值獲取』的平衡，讓每一分投入都有清楚回報。",
+      "cards": [
+        {
+          "tag": "前端：顧客與價值",
+          "title": "目標顧客與價值主張",
+          "desc": "精準對接的核心買家、專屬通路渠道（自建網站與社群）與長效顧客關係維護策略。"
+        },
+        {
+          "tag": "中端：核心資源運作",
+          "title": "關鍵活動與合作夥伴",
+          "desc": "商品挑選打樣、品牌視覺包裝、校園各科系深度協同合作，以及表單接單運作日常。"
+        },
+        {
+          "tag": "後端：財務收支平衡",
+          "title": "成本結構與收入來源",
+          "desc": "固定開銷（網址與樣品費）與變動成本（材料與包裝），對比商品零售與客製服務收入。"
+        }
+      ]
+    }
+  },
+  {
+    "id": 7,
+    "module": "模組 1 · 品牌企劃與商業模式起手式",
+    "badge": "一人公司 · 07/50",
+    "title": "一人電商指揮部：切換三種作戰思維",
+    "subtitle": "用現代數位工具解放繁瑣雜務，一人也能擁有正規團隊的執行力",
+    "type": "stepper",
+    "data": {
+      "insight": "一人創業成功的關鍵，在於懂得適時切換不同視角，不讓自己陷入忙亂的死胡同。",
+      "steps": [
+        {
+          "phase": "執行長思維",
+          "title": "方向掌舵與跨域整合",
+          "tag": "每週 2 小時",
+          "desc": "決定品牌發展方向，拜訪合作科系，評估財務健康度與整體進度。"
+        },
+        {
+          "phase": "行銷長思維",
+          "title": "文案故事與視覺審美",
+          "tag": "每週 4 小時",
+          "desc": "規劃社群貼文、拍攝商品照片，撰寫打動人心的痛點轉化文案。"
+        },
+        {
+          "phase": "營運長思維",
+          "title": "接單發信與物流配送",
+          "tag": "每日 30 分鐘",
+          "desc": "檢視表單訂單信件、核對匯款後五碼、包裝商品並準時交寄顧客。"
+        }
+      ]
+    }
+  },
+  {
+    "id": 8,
+    "module": "模組 1 · 品牌企劃與商業模式起手式",
+    "badge": "模組總結 · 08/50",
+    "title": "模組總結：讓商業藍圖化為真實行動",
+    "subtitle": "今天完成的第一份品牌企劃，就是你未來邁向自由與獲利的敲門磚",
+    "type": "conclusion",
+    "data": {
+      "insight": "創業最困難的不是宏大的目標，而是勇敢邁出第一步。完成企劃，就是完成了一半。",
+      "actions": [
+        {
+          "step": "行動一",
+          "title": "確定品牌名稱與口號",
+          "desc": "為你的公司取一個響亮的好名字，並附上一句 15 字以內的品牌價值主張。"
+        },
+        {
+          "step": "行動二",
+          "title": "寫下 100 字品牌故事",
+          "desc": "回答『我是誰、為什麼做這件事、能為顧客創造什麼價值』這三個核心問題。"
+        },
+        {
+          "step": "行動三",
+          "title": "錨定一位具體目標買家",
+          "desc": "在腦海中想像出一位真實的朋友或同學，今天所有商品都為他的喜好量身打造。"
+        }
+      ]
+    }
+  },
+  {
+    "id": 9,
+    "module": "模組 2 · 商品視覺與價值定價策略",
+    "badge": "模組導言 · 09/50",
+    "title": "商品就是你的無聲業務員",
+    "subtitle": "自媒體電商沒有實體店員在身旁解說，一切說服力全靠視覺與文字",
+    "type": "split-cards",
+    "data": {
+      "insight": "在網路上買東西，顧客買的往往是『照片帶來的想像』與『文字給予的信任』。",
+      "cards": [
+        {
+          "title": "常見新手致命盲點",
+          "points": [
+            "商品照片灰暗模糊、背景雜亂，毫無購買慾望。",
+            "只列出枯燥的規格尺寸，沒有說明到底有何好處。",
+            "定價沒有結構策略，不是隨意開價就是盲目殺價。"
+          ]
+        },
+        {
+          "title": "專業電商必勝法則",
+          "points": [
+            "高對比明亮生活風格照，營造擁有後的憧憬感。",
+            "FAB 法則把商品規格全面轉化為顧客專屬利益。",
+            "梯隊定價搭配錨定心理學，引導顧客選擇利潤款。"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": 10,
+    "module": "模組 2 · 商品視覺與價值定價策略",
+    "badge": "攝影心法 · 10/50",
+    "title": "手機拍攝商業大片：三招拍出高級感",
+    "subtitle": "不用昂貴的單眼相機，運用自然光與生活角落，人人都能拍出名品氛圍",
+    "type": "cards-3",
+    "data": {
+      "insight": "好的商品照不是靠設備，而是靠對光線的掌握與畫面故事性的營造。",
+      "cards": [
+        {
+          "tag": "第一招",
+          "title": "窗邊柔和自然側光",
+          "desc": "選擇早上 9 點或下午 3 點的窗邊光線，搭配一張白色厚紙板補光，立體又溫柔。"
+        },
+        {
+          "tag": "第二招",
+          "title": "純粹背景去蕪存菁",
+          "desc": "使用純白桌面、素色麻布或素色石紋背景板，讓視覺焦點 100% 停留在商品細節上。"
+        },
+        {
+          "tag": "第三招",
+          "title": "生活情境氛圍道具",
+          "desc": "依據主題搭配小道具：一本英文雜誌、一杯熱拿鐵或一小撮乾燥花，提升整體檔次。"
+        }
+      ]
+    }
+  },
+  {
+    "id": 11,
+    "module": "模組 2 · 商品視覺與價值定價策略",
+    "badge": "服務展示 · 11/50",
+    "title": "無形服務有形化：把看不見的專業視覺化",
+    "subtitle": "販售諮詢、教學或客製服務？透過結構化圖表與步驟化流程贏得信任",
+    "type": "split-cards",
+    "data": {
+      "insight": "服務型產品最大的痛點是顧客難以預期結果。將流程明確化，能大幅降低下單焦慮。",
+      "cards": [
+        {
+          "title": "前後對比 (Before & After)",
+          "points": [
+            "展示接受服務前的困擾狀況與接受服務後的蛻變成果。",
+            "搭配真實顧客反饋或學員前後差異作品，具說服力。",
+            "注意真實不浮誇，呈現合理且可靠的專業水準。"
+          ]
+        },
+        {
+          "title": "標準化四步驟服務流程圖",
+          "points": [
+            "第一步：線上表單預約並填寫客製化需求說明。",
+            "第二步：1 對 1 溝通確認服務細節與服務排期。",
+            "第三步：專業團隊交付成果並提供修改微調。",
+            "第四步：完工驗收與專屬售後安心保固服務。"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": 12,
+    "module": "模組 2 · 商品視覺與價值定價策略",
+    "badge": "定價階梯 · 12/50",
+    "title": "三層定價架構：滿足各預算層級的顧客",
+    "subtitle": "不要只賣一種商品！設計三種價位梯度，能同時擴大客群並拉高客單價",
+    "type": "cards-3",
+    "data": {
+      "insight": "經典的三段式定價法，能讓顧客不再思考『買或不買』，而是思考『買哪一個最划算』。",
+      "cards": [
+        {
+          "tag": "體驗款 (低門檻)",
+          "title": "入門引流嘗鮮款",
+          "desc": "定價 NT$ 199 - 299。毛利較低，目的是打破初次購買防備心，快速累積真實購買顧客資料。"
+        },
+        {
+          "tag": "主力款 (熱銷主力)",
+          "title": "核心主打高利潤款",
+          "desc": "定價 NT$ 590 - 890。內容最豐富、性價比最高，也是你最希望 70% 顧客購買的核心商品。"
+        },
+        {
+          "tag": "旗艦款 (尊榮客製)",
+          "title": "尊榮旗艦客製組合",
+          "desc": "定價 NT$ 1,680 - 2,980。包含全套配件與專屬一對一定製，樹立專業高度並吸引高預算買家。"
+        }
+      ]
+    }
+  },
+  {
+    "id": 13,
+    "module": "模組 2 · 商品視覺與價值定價策略",
+    "badge": "價格心理學 · 13/50",
+    "title": "錨定效應：引導顧客買下主力商品的秘密",
+    "subtitle": "高價旗艦款不僅能創造尊榮收益，更能為主力商品提供完美的對比錨點",
+    "type": "stepper",
+    "data": {
+      "insight": "價格永遠是相對的。透過聰明的排版並列，顧客自然會發現中間選項是最明智的選擇。",
+      "steps": [
+        {
+          "phase": "錨點建立",
+          "title": "高價旗艦款先入眼簾",
+          "tag": "對比基準",
+          "desc": "顧客看到旗艦款定價 NT$ 1,980，心理預期被定錨在高級精緻的定位上。"
+        },
+        {
+          "phase": "價值顯現",
+          "title": "主力款凸顯極致性價比",
+          "tag": "促成成交",
+          "desc": "主力款僅需 NT$ 690，卻擁有旗艦款 80% 的核心精華，顧客立刻覺得『超賺！』。"
+        },
+        {
+          "phase": "安心下單",
+          "title": "入門體驗款提供無痛退路",
+          "tag": "首購轉換",
+          "desc": "若預算非常有限，NT$ 199 也能輕鬆入手，不流失任何一位帶著興趣造訪的顧客。"
+        }
+      ]
+    }
+  },
+  {
+    "id": 14,
+    "module": "模組 2 · 商品視覺與價值定價策略",
+    "badge": "FAB 文案 · 14/50",
+    "title": "FAB 法則：把產品特色說成動人好處",
+    "subtitle": "Feature（特色）、Advantage（優勢）、Benefit（利益）黃金說服金字塔",
+    "type": "quad-grid",
+    "data": {
+      "insight": "顧客不是想買一個 5mm 的鑽頭，而是想買牆壁上一個漂亮的洞，好掛上與愛人的合照。",
+      "quads": [
+        {
+          "title": "F · 特色 (Feature)",
+          "points": [
+            "客觀的事實與材質尺寸",
+            "例如：304 不鏽鋼雙層真空",
+            "例如：選用 100% 紐西蘭純天然羊毛"
+          ]
+        },
+        {
+          "title": "A · 優勢 (Advantage)",
+          "points": [
+            "這項特色帶來的直接功能表現",
+            "例如：長效保溫保冰超過 12 小時",
+            "例如：親膚透氣，長時間配戴不過敏"
+          ]
+        },
+        {
+          "title": "B · 利益 (Benefit)",
+          "points": [
+            "顧客因此得到的幸福感受與問題解決",
+            "例如：出門一整天隨時喝到冰涼冷萃茶",
+            "例如：敏感肌膚也能安心展現精緻穿搭"
+          ]
+        },
+        {
+          "title": "文案公式實操",
+          "points": [
+            "『因為擁有（特色）』",
+            "『所以能夠（優勢）』",
+            "『這意味著你（利益享受）』！"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": 15,
+    "module": "模組 2 · 商品視覺與價值定價策略",
+    "badge": "方案對比 · 15/50",
+    "title": "痛點放大鏡：傳統舊做法 vs 我們的全新體驗",
+    "subtitle": "用清晰的對照表格，讓顧客一眼看出你的產品如何痛擊傳統痛點",
+    "type": "split-cards",
+    "data": {
+      "insight": "明確的比較能消除猶豫不決。不用批評對手，只要客觀列出顧客常遇到的糟糕體驗即可。",
+      "cards": [
+        {
+          "title": "傳統市售方案的常見遺憾",
+          "points": [
+            "規格千篇一律，毫無個人風格與溫度。",
+            "等待期長達兩三週，售後客服詢問石沉大海。",
+            "成分標示含糊不清，買給自己或家人都不安心。"
+          ]
+        },
+        {
+          "title": "我們的專屬全新承諾",
+          "points": [
+            "校園職人手作限量出爐，每件作品都獨具特色。",
+            "當週接單當週寄出，表單送出後即時專人確認。",
+            "公開透明原料來源，品質有保證，買得最放心。"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": 16,
+    "module": "模組 2 · 商品視覺與價值定價策略",
+    "badge": "信任憑據 · 16/50",
+    "title": "信任背書：消除最後一絲購買顧慮",
+    "subtitle": "沒有知名大廠的光環？靠真實、透明與專業憑據贏得顧客的心",
+    "type": "cards-3",
+    "data": {
+      "insight": "信任是商業交易唯一的貨幣。在商品頁適當加上信任憑據，成交轉化率可提升 3 倍以上。",
+      "cards": [
+        {
+          "tag": "專業認證",
+          "title": "技職檢驗與食品安全",
+          "desc": "出示食品衛生檢查檢驗合格證明、乙丙級專業技術士證照或相關專業實務認證標章。"
+        },
+        {
+          "tag": "真實評價",
+          "title": "第一批試用顧客好評",
+          "desc": "擷取同學、老師或試用好友的真實 LINE 對話截圖或開箱拍照，勝過千言萬語自我吹捧。"
+        },
+        {
+          "tag": "安心保證",
+          "title": "瑕疵無條件更換服務",
+          "desc": "承諾若商品寄達運送破損，保證 48 小時內免費補寄全新正品，給買家滿滿安全感。"
+        }
+      ]
+    }
+  },
+  {
+    "id": 17,
+    "module": "模組 2 · 商品視覺與價值定價策略",
+    "badge": "視覺排版 · 17/50",
+    "title": "高轉化商品頁排版黃金動線",
+    "subtitle": "由上而下的視覺閱讀節奏，帶領訪客一步步從產生興趣走向按下購買",
+    "type": "stepper",
+    "data": {
+      "insight": "把商品頁當成一段娓娓道來的故事。不要一開頭就催促購買，先點燃渴望，成交自然水到渠成。",
+      "steps": [
+        {
+          "phase": "首屏引睛",
+          "title": "視覺焦點商品大圖與金句",
+          "tag": "前 3 秒",
+          "desc": "高畫質情境照片搭配直擊痛點的品牌主張，吸引目光繼續下滑。"
+        },
+        {
+          "phase": "情境共鳴",
+          "title": "生活痛點與解決方案介紹",
+          "tag": "建立認同",
+          "desc": "描述常見日常困擾，介紹這項產品如何成為生活中的美好轉折。"
+        },
+        {
+          "phase": "產品拆解",
+          "title": "FAB 利益說明與信任憑據",
+          "tag": "理性說服",
+          "desc": "展示細節近照、材料成分檢驗與真實好友愛用評價背書。"
+        },
+        {
+          "phase": "引導下單",
+          "title": "清楚標價與表單填寫入口",
+          "tag": "立即行動",
+          "desc": "三層定價標示清楚，醒目按鈕引導點擊進入線上預約訂購表單。"
+        }
+      ]
+    }
+  },
+  {
+    "id": 18,
+    "module": "模組 2 · 商品視覺與價值定價策略",
+    "badge": "模組總結 · 18/50",
+    "title": "模組總結：讓好商品自帶說服力",
+    "subtitle": "視覺引人入勝、文字直擊痛點、定價聰明錨定，你的商品就是爆款",
+    "type": "conclusion",
+    "data": {
+      "insight": "優秀的產品是行銷最好的加速器。把細節打磨到極致，顧客買了一定會主動幫你宣傳。",
+      "actions": [
+        {
+          "step": "行動一",
+          "title": "拍攝至少 3 張高質感照片",
+          "desc": "一張情境主圖、一張細節特寫、一張使用情境照，光線均勻柔和。"
+        },
+        {
+          "step": "行動二",
+          "title": "撰寫 30 字 FAB 利益文案",
+          "desc": "明確列出產品為目標客群帶來的 3 項最具體的生活改變與享受。"
+        },
+        {
+          "step": "行動三",
+          "title": "設定你的三層價格梯隊",
+          "desc": "決定入門款、主力款與旗艦款的名稱、規格與定價，主力款標上『店長推薦』。"
+        }
+      ]
+    }
+  },
+  {
+    "id": 19,
+    "module": "模組 3 · 極速建站與表單金流 MVP",
+    "badge": "模組導言 · 19/50",
+    "title": "初創 MVP 哲學：先跑起來，再求完美",
+    "subtitle": "不要花三個月等金流審核與大系統建置！今天下午就拿到第一筆訂單",
+    "type": "split-cards",
+    "data": {
+      "insight": "許多創業計畫死於『過度準備』。真正的創業者懂得用最簡單的工具，以最快速度驗證市場需求。",
+      "cards": [
+        {
+          "title": "繁複大系統的沈重包袱",
+          "points": [
+            "需設立營業登記、公司銀行帳戶與繁瑣資格審查。",
+            "第三方金流每筆抽成 2.5% - 3.5%，還有昂貴設定年費。",
+            "系統功能複雜龐大，維護耗時，拖延產品上市黃金期。"
+          ]
+        },
+        {
+          "title": "輕量級表單 MVP 的巨大優勢",
+          "points": [
+            "10 分鐘利用 Google 表單建置完成，零成本免費起步。",
+            "支援匯款後五碼或超商取貨付款，100% 營業收入直接入袋。",
+            "顧客填表自動發送 Email 通知信箱，接單提醒零時差！"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": 20,
+    "module": "模組 3 · 極速建站與表單金流 MVP",
+    "badge": "表單價值 · 20/50",
+    "title": "為什麼初創期用『表單接單』最好？",
+    "subtitle": "保留人性的溫度，建立一對一真實連結，為品牌累積第一批忠實鐵粉",
+    "type": "cards-3",
+    "data": {
+      "insight": "在品牌羽翼未豐時，人與人之間的親切溝通，反而比冷冰冰的電商購物車更具信任感。",
+      "cards": [
+        {
+          "tag": "極致彈性",
+          "title": "隨時修改欄位與商品",
+          "desc": "今天想新增一個草莓限定口味？手機打開表單 30 秒就能更新，不需工程師改程式碼。"
+        },
+        {
+          "tag": "深度回饋",
+          "title": "直接收集買家備註與反饋",
+          "desc": "在表單留下專屬需求或甜度調整備註，讓你直接獲取第一手市場偏好與珍貴建議。"
+        },
+        {
+          "tag": "溫暖互動",
+          "title": "專人發信確認更有保障",
+          "desc": "接單後由創辦人親自發信或 LINE 確認訂單，讓顧客感受到被無微不至地認真對待。"
+        }
+      ]
+    }
+  },
+  {
+    "id": 21,
+    "module": "模組 3 · 極速建站與表單金流 MVP",
+    "badge": "欄位設計 · 21/50",
+    "title": "高轉化下單表單設計心法",
+    "subtitle": "多問一個無關緊要的問題，就會多流失 10% 的顧客！欄位精簡是王道",
+    "type": "quad-grid",
+    "data": {
+      "insight": "填寫表單的摩擦力越低，成交率就越高。只索取絕對必要的寄送與聯繫資料。",
+      "quads": [
+        {
+          "title": "必填核心欄位 (必選)",
+          "points": [
+            "訂購人真實姓名",
+            "手機聯絡電話（取件簡訊通知用）",
+            "常用電子郵件信箱（訂單備份用）"
+          ]
+        },
+        {
+          "title": "商品規格選項 (下拉選單)",
+          "points": [
+            "商品款式與數量選擇",
+            "加購優惠選項（如：滿 500 現折 50）",
+            "清晰註明各項商品的單價與規格"
+          ]
+        },
+        {
+          "title": "配送取件方式 (單選)",
+          "points": [
+            "校內指定地點自取（最省運費）",
+            "7-11 / 全家超商門市取貨",
+            "黑貓宅急便宅配到府（填詳細地址）"
+          ]
+        },
+        {
+          "title": "付款與備註 (文字說明)",
+          "points": [
+            "付款方式：銀行轉帳 / 貨到付款",
+            "轉帳帳號資訊與戶名清晰列出",
+            "選填：轉帳後五碼與客製特殊需求"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": 22,
+    "module": "模組 3 · 極速建站與表單金流 MVP",
+    "badge": "自動發信 · 22/50",
+    "title": "設定表單自動寄信到個人信箱",
+    "subtitle": "零程式碼串接！顧客送出訂單瞬間，手機立刻跳出接單提醒",
+    "type": "stepper",
+    "data": {
+      "insight": "掌握自動化發信通知，一人兼職經營電商也能擁有 24 小時不打烊的敏捷反應力。",
+      "steps": [
+        {
+          "phase": "第一步",
+          "title": "開啟表單通知功能",
+          "tag": "內建功能",
+          "desc": "在 Google 表單點選『回覆』分頁，勾選『有新回覆時透過電子郵件通知我』。"
+        },
+        {
+          "phase": "第二步",
+          "title": "啟用試算表連動",
+          "tag": "自動歸檔",
+          "desc": "點擊綠色試算表圖示，將表單自動連結至 Google 試算表，所有訂單自動排序列整齊。"
+        },
+        {
+          "phase": "第三步",
+          "title": "進階擴充外掛 (選用)",
+          "tag": "客製郵件",
+          "desc": "安裝 Form Notifications 免費外掛，可設定同時自動發送『訂單確認信』給顧客！"
+        }
+      ]
+    }
+  },
+  {
+    "id": 23,
+    "module": "模組 3 · 極速建站與表單金流 MVP",
+    "badge": "雙向確認 · 23/50",
+    "title": "給買家的自動訂購確認信範本",
+    "subtitle": "讓顧客送出表單後心中有底，大幅降低棄單率與重複下單疑慮",
+    "type": "split-cards",
+    "data": {
+      "insight": "一封清楚明瞭的自動確認信，是展現專業度與負責任態度的關鍵接觸點。",
+      "cards": [
+        {
+          "title": "顧客確認信必備四大模組",
+          "points": [
+            "熱情感謝詞：感謝您的支持，我們已收到您的訂單！",
+            "完整訂購明細：商品名稱、款式數量與總金額清單。",
+            "付款與出貨說明：匯款帳號、預計出貨工作日說明。",
+            "真人客服管道：若有任何問題，隨時回信或加入官方 LINE。"
+          ]
+        },
+        {
+          "title": "暖心加分小細節",
+          "points": [
+            "附上創辦人的親筆問候或品牌小故事。",
+            "說明手作商品製作進度（如：麵糰正在發酵中）。",
+            "附上下次購買專屬 9 折折扣碼，促進未來回購！"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": 24,
+    "module": "模組 3 · 極速建站與表單金流 MVP",
+    "badge": "金流模式 · 24/50",
+    "title": "初創期三大親民付款模式比較",
+    "subtitle": "不依賴昂貴信用卡閘道，靈活運用台灣人最習慣的親切支付管道",
+    "type": "cards-3",
+    "data": {
+      "insight": "多元便利的付款選項能掃除最後障礙。初期以安全、直接、到帳快速的管道為主。",
+      "cards": [
+        {
+          "tag": "最推薦",
+          "title": "ATM 轉帳 / 網銀後五碼",
+          "desc": "最經典直接的模式。表單附上銀行代號與帳號，顧客轉帳後填入帳號後五碼，手機對帳 5 秒完成。"
+        },
+        {
+          "tag": "校園最愛",
+          "title": "面交取貨現場付款",
+          "desc": "針對校內同學與教職員，約定在系辦或校園中庭一手交錢一手交貨，零運費、零手續費最親切。"
+        },
+        {
+          "tag": "信任首選",
+          "title": "超商取貨付款 (綠界/賣貨便)",
+          "desc": "若顧客較習慣超取，可搭配 7-11 賣貨便或全家好賣+ 快速出貨，超商代收金額後直接撥入戶頭。"
+        }
+      ]
+    }
+  },
+  {
+    "id": 25,
+    "module": "模組 3 · 極速建站與表單金流 MVP",
+    "badge": "後台儀表 · 25/50",
+    "title": "Google 試算表化身出貨控制台",
+    "subtitle": "利用雲端試算表條件格式化與狀態標記，井井有條管理每一筆訂單進度",
+    "type": "quad-grid",
+    "data": {
+      "insight": "不用買昂貴的 ERP 系統。只要在試算表多加兩個下拉選單，就能掌握全局流程。",
+      "quads": [
+        {
+          "title": "狀態一：待核帳 (黃色)",
+          "points": [
+            "顧客剛填寫完表單",
+            "等待查對網銀轉帳紀錄",
+            "確認後五碼與金額相符"
+          ]
+        },
+        {
+          "title": "狀態二：備貨中 (藍色)",
+          "points": [
+            "款項已入帳確認無誤",
+            "通知製作或開始打包商品",
+            "列印出貨單與包裝外箱"
+          ]
+        },
+        {
+          "title": "狀態三：已出貨 (橘色)",
+          "points": [
+            "商品交寄超商或郵局黑貓",
+            "取得物流包裹追蹤碼",
+            "發送出貨通知信給顧客"
+          ]
+        },
+        {
+          "title": "狀態四：已完成 (綠色)",
+          "points": [
+            "顧客順利取件簽收確認",
+            "無缺損無退換貨客訴",
+            "將顧客名單歸檔至 VIP 庫"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": 26,
+    "module": "模組 3 · 極速建站與表單金流 MVP",
+    "badge": "客服跟進 · 26/50",
+    "title": "黃金 15 分鐘接單反應：超越大品牌的溫度",
+    "subtitle": "微型自媒體電商打敗大型電商平台的唯一法寶，就是無可比擬的親切回應速度",
+    "type": "stepper",
+    "data": {
+      "insight": "顧客下單時期待值最高。如果能在 15 分鐘內收到創辦人的熱情回覆，顧客會記住你一輩子。",
+      "steps": [
+        {
+          "phase": "收到通知",
+          "title": "信箱即時推播訂單訊息",
+          "tag": "0 - 5 分鐘",
+          "desc": "手機震動看見新訂單，確認訂購品項與客戶特殊備註需求。"
+        },
+        {
+          "phase": "核帳打招呼",
+          "title": "LINE 或 Email 親切確認",
+          "tag": "5 - 15 分鐘",
+          "desc": "『林小姐您好！已收到您的訂單，我們會為您挑選最新鮮的品項出貨喔！』"
+        },
+        {
+          "phase": "出貨通知",
+          "title": "拍照給買家看包裝好的包裹",
+          "tag": "當日出貨",
+          "desc": "拍下一張貼有買家名字的出貨箱照片，給予無微不至的安心尊榮感。"
+        }
+      ]
+    }
+  },
+  {
+    "id": 27,
+    "module": "模組 3 · 極速建站與表單金流 MVP",
+    "badge": "安全防護 · 27/50",
+    "title": "資安防詐與顧客隱私維護四守則",
+    "subtitle": "遵守個人資料保護法，保護顧客聯繫資訊，杜絕常見解除分期付款詐騙",
+    "type": "split-cards",
+    "data": {
+      "insight": "誠信與安全是生意的命脈。主動提醒顧客防範詐騙，更能樹立負責任的品牌形象。",
+      "cards": [
+        {
+          "title": "個資保護標準守則",
+          "points": [
+            "訂單試算表嚴格設定私人權限，切勿公開外流。",
+            "寄件託運單上的電話若非必要，可隱藏中間四碼。",
+            "定期清理過期的顧客地址資料，不作多餘商業兜售。"
+          ]
+        },
+        {
+          "title": "官方防詐醒目宣導",
+          "points": [
+            "在網站與確認信清楚註記：『本店絕不會以電話要求操作 ATM 解除分期！』",
+            "遇可疑來電請顧客立即撥打 165 反詐騙專線查證。",
+            "統一官方聯繫管道，不使用私人不明電話聯絡買家。"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": 28,
+    "module": "模組 3 · 極速建站與表單金流 MVP",
+    "badge": "模組總結 · 28/50",
+    "title": "圖解：極簡表單到即時成單的自動化完整流程",
+    "subtitle": "自建網站展示 ➔ 表單填單 ➔ Email 即時通知 ➔ 轉帳出貨的極速完整流程",
+    "type": "conclusion",
+    "data": {
+      "insight": "這是一套被無數微型創業者驗證成功的極簡模式。今天學會，下課後就能直接上線接單！",
+      "actions": [
+        {
+          "step": "第一步：網站展示",
+          "title": "按鈕超連結直通表單",
+          "desc": "在你的專屬網站商品頁，放上『立即填單訂購』的大按鈕，點擊跳轉至表單。"
+        },
+        {
+          "step": "第二步：表單收集",
+          "title": "Google 表單自動連動",
+          "desc": "顧客 1 分鐘內填妥收件資料與品項，勾選付款方式，點擊送出。"
+        },
+        {
+          "step": "第三步：即時發信",
+          "title": "信箱通知與核帳出貨",
+          "desc": "你的個人信箱秒速收到訂單明細，發信確認後包裝商品，順利完成第一筆交易！"
+        }
+      ]
+    }
+  },
+  {
+    "id": 29,
+    "module": "模組 4 · 跨科系合作拜訪與產學實戰",
+    "badge": "模組導言 · 29/50",
+    "title": "走出教室：整個校園都是你的商業後盾",
+    "subtitle": "技職與大學各系所擁有無數寶藏人才與技術，只缺一個將它們商業化的平台",
+    "type": "split-cards",
+    "data": {
+      "insight": "未來的商業競爭不是比拼單打獨鬥，而是比拼誰能整合更多專業資源。你就是校園創意的經紀人。",
+      "cards": [
+        {
+          "title": "各科系師生常見的痛點",
+          "points": [
+            "做出極佳的烘焙、專案作品或硬體，卻只能放在系辦展示。",
+            "缺乏電商銷售管道與社群宣傳經驗，不知如何商業化。",
+            "想參加校外競賽或產學專案，卻缺少具體市場營運成果。"
+          ]
+        },
+        {
+          "title": "你所能帶來的巨大價值",
+          "points": [
+            "提供已建置完成的專業官方網站與線上訂購通路。",
+            "負責商品包裝企劃、視覺攝影、文案撰寫與訂單行政。",
+            "創造真實營業額與顧客好評，為雙方專題履歷寫下輝煌亮點！"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": 30,
+    "module": "模組 4 · 跨科系合作拜訪與產學實戰",
+    "badge": "拜訪心態 · 30/50",
+    "title": "合作拜訪提案心態：不是求幫忙，而是創造雙贏",
+    "subtitle": "用合夥人的尊重視角出發，讓對方感受到他的專業被深深肯定與放大",
+    "type": "cards-3",
+    "data": {
+      "insight": "優秀的商務洽談永遠建立在『你能為對方解決什麼』之上，而非『你能從對方身上拿走什麼』。",
+      "cards": [
+        {
+          "tag": "第一原則",
+          "title": "尊重專業，虛心請教",
+          "desc": "承認自己在技術、廚藝或工藝上的不足，真心讚美對方的作品與專利，建立信任基石。"
+        },
+        {
+          "tag": "第二原則",
+          "title": "明確分工，互不踩線",
+          "desc": "對方專注『研發與生產品管』，你專注『品牌行銷、網站接單與客戶服務』，職責分明。"
+        },
+        {
+          "tag": "第三原則",
+          "title": "共享成果，透明公開",
+          "desc": "所有表單訂單與收入數據透明對帳，無論收益或榮譽，彼此平等共享成果。"
+        }
+      ]
+    }
+  },
+  {
+    "id": 31,
+    "module": "模組 4 · 跨科系合作拜訪與產學實戰",
+    "badge": "提案架構 · 31/50",
+    "title": "一頁紙合作提案書 (One-Page Pitch)",
+    "subtitle": "不要帶幾十頁冗長的簡報！一張 A4 紙，三分鐘講清楚合作亮點與執行步驟",
+    "type": "quad-grid",
+    "data": {
+      "insight": "教授與科系主任時間寶貴。一張排版精美的單頁提案書，最能展現你的企劃與統籌能力。",
+      "quads": [
+        {
+          "title": "1. 合作專案名稱與緣起",
+          "points": [
+            "響亮具有話題性的聯名主題",
+            "解決的痛點與創造的校園亮點",
+            "預計達成的實務專題目標"
+          ]
+        },
+        {
+          "title": "2. 具體聯名商品概念",
+          "points": [
+            "商品名稱、規格與主打特色",
+            "目標客群與預計定價梯隊",
+            "產品外觀樣品預覽圖或草圖"
+          ]
+        },
+        {
+          "title": "3. 權責分工與通路規劃",
+          "points": [
+            "合作方：商品打樣與品質把關",
+            "我方：自建網站架設、表單行銷",
+            "出貨與包裝作業具體流程"
+          ]
+        },
+        {
+          "title": "4. 分潤機制與預期成果",
+          "points": [
+            "營收分潤比例或材料費補助",
+            "成果發表展板與競賽參賽共同掛名",
+            "執行進度時程表（從打樣到開賣）"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": 32,
+    "module": "模組 4 · 跨科系合作拜訪與產學實戰",
+    "badge": "利益共享 · 32/50",
+    "title": "三大互利共贏分潤模式指南",
+    "subtitle": "親兄弟明算帳！事前把利潤分配講清楚，合作才能長長久久無後顧之憂",
+    "type": "cards-3",
+    "data": {
+      "insight": "健康的商業合作必須讓所有參與者都有肉吃。依照不同商品屬性，挑選最適合的分潤結構。",
+      "cards": [
+        {
+          "tag": "模式 A · 最直接",
+          "title": "固定成本買斷制",
+          "desc": "適合實體原料（如烘焙點心）。向餐飲科同學以固定成本價買斷成品，後續行銷利潤與滯銷風險由你全權承擔。"
+        },
+        {
+          "tag": "模式 B · 最推薦",
+          "title": "毛利階梯分潤制",
+          "desc": "扣除食材/零件耗材成本後，淨利潤雙方五五拆帳（或 6:4）。彼此休戚與共，共同為拉高銷量而努力！"
+        },
+        {
+          "tag": "模式 C · 長期性",
+          "title": "專利/設計權利金制",
+          "desc": "適合電子科或寵物科的專利設計。每賣出一個成品，支付一定比例的設計授權費給研發團隊。"
+        }
+      ]
+    }
+  },
+  {
+    "id": 33,
+    "module": "模組 4 · 跨科系合作拜訪與產學實戰",
+    "badge": "拜訪禮儀 · 33/50",
+    "title": "拜訪科系主任與指導老師實戰溝通術",
+    "subtitle": "用專業的商業素養打動師長，取得系所行政支持與場地設備背書",
+    "type": "stepper",
+    "data": {
+      "insight": "老師們最在乎的是『學生的實務學習收穫』與『合規安全無法律糾紛』。切中要點，成功率破 90%。",
+      "steps": [
+        {
+          "phase": "事前預約",
+          "title": "寄送正式信件附提案簡報",
+          "tag": "展現誠意",
+          "desc": "主動說明來意、拜訪目的與討論大綱，禮貌詢問方便請益的課餘時段。"
+        },
+        {
+          "phase": "實體簡報",
+          "title": "帶著自建網站與雛形樣品",
+          "tag": "看見成果",
+          "desc": "當場用手機展示運作正常的訂購網站，證明你不是隨口說說，而是已經準備好了！"
+        },
+        {
+          "phase": "解除疑慮",
+          "title": "主動承擔風險與法律責任",
+          "tag": "安心保障",
+          "desc": "強調學生食品安全標示、智慧財產權授權書簽署，讓老師完全放心放手讓同學發揮。"
+        }
+      ]
+    }
+  },
+  {
+    "id": 34,
+    "module": "模組 4 · 跨科系合作拜訪與產學實戰",
+    "badge": "時程控管 · 34/50",
+    "title": "四週跨科系專案推進甘特圖",
+    "subtitle": "有節奏的進度控管，確保專案如期上線開賣，避免拖延變成虎頭蛇尾",
+    "type": "quad-grid",
+    "data": {
+      "insight": "專案管理的本質是時間與預期的管理。每週設定明確的驗收節點，讓合作各方步調一致。",
+      "quads": [
+        {
+          "title": "第 1 週：提案共識與立項",
+          "points": [
+            "拜訪目標科系並確認合作意向",
+            "簽署合作備忘錄與分潤協議",
+            "確定聯名商品類別與打樣規格"
+          ]
+        },
+        {
+          "title": "第 2 週：商品打樣與攝影",
+          "points": [
+            "第一批樣品試做與品質盲測調整",
+            "完成高畫質商品情境照片拍攝",
+            "撰寫產品 FAB 利益文案與價格設定"
+          ]
+        },
+        {
+          "title": "第 3 週：網站更新與表單發佈",
+          "points": [
+            "將商品資訊上架自建品牌網站",
+            "建置 Google 訂購表單並測試發信通知",
+            "小規模邀請 10 位好友測試下單流程"
+          ]
+        },
+        {
+          "title": "第 4 週：正式開賣與成果展示",
+          "points": [
+            "社群同步宣傳，開放校內與網路下單",
+            "依表單訂單準時核帳、生產與交付",
+            "統計營收數據，共同撰寫成果發表報告"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": 35,
+    "module": "模組 4 · 跨科系合作拜訪與產學實戰",
+    "badge": "合約規範 · 35/50",
+    "title": "合作備忘錄 (MOU)：保護彼此的智慧財產",
+    "subtitle": "簡單清楚的書面約定，防範未來可能的誤解，確保成果共同所有",
+    "type": "split-cards",
+    "data": {
+      "insight": "簽署備忘錄不是彼此防備，而是為了更坦誠、更長久的信任合作。",
+      "cards": [
+        {
+          "title": "MOU 必備三大核心條款",
+          "points": [
+            "作品歸屬：原創設計/食譜專利歸研發科系所有，行銷銷售權由團隊獨家代理。",
+            "品牌標示：所有包裝與網站必須明確標註『研發合作科系與學生姓名』。",
+            "終止機制：若一方因故無法履約，應於兩週前通知，並清結已產生的費用與訂單。"
+          ]
+        },
+        {
+          "title": "校園合作的安全底線",
+          "points": [
+            "嚴禁使用未經授權的知名動漫或卡通圖案作為商品外觀。",
+            "食品與化妝品嚴格遵守法規標示，絕不宣稱誇大醫療療效。",
+            "所有交易款項留存完整收據憑證，誠實申報公開透明。"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": 36,
+    "module": "模組 4 · 跨科系合作拜訪與產學實戰",
+    "badge": "模組總結 · 36/50",
+    "title": "模組總結：成為校園產學的資源連結者",
+    "subtitle": "一個人走得快，一群人走得遠！帶著你的企劃案，開啟跨域新冒險",
+    "type": "conclusion",
+    "data": {
+      "insight": "商業世界最稀缺的永遠不是點子，而是能把不同領域高手凝聚在一起的整合領導者。",
+      "actions": [
+        {
+          "step": "行動一",
+          "title": "列印一張紙合作提案書",
+          "desc": "今天下課前完成你的單頁提案草稿，寫清楚商品概念與合作優勢。"
+        },
+        {
+          "step": "行動二",
+          "title": "敲定拜訪名單與時間",
+          "desc": "選定至少一組你想拜訪的科系（餐飲、電商、寵物、電子），送出請益信。"
+        },
+        {
+          "step": "行動三",
+          "title": "準備好你的自建網站展示",
+          "desc": "確保手機開啟網站順暢、表單按鈕可用，展現專業的執行力！"
+        }
+      ]
+    }
+  },
+  {
+    "id": 37,
+    "module": "模組 5 · 四大科系深度聯名實作指南",
+    "badge": "模組導言 · 37/50",
+    "title": "四大專業科系：各自綻放的商業靈感",
+    "subtitle": "深入餐飲、電商、寵物經營與電子科的專業領域，挖掘高價值合作點",
+    "type": "quad-grid",
+    "data": {
+      "insight": "每個科系都有獨特的專業語言與核心競爭力。找對切入點，合作就會水到渠成。",
+      "quads": [
+        {
+          "title": "餐飲科 · 美味魔法",
+          "points": [
+            "精緻手工烘焙甜點",
+            "低卡健康即食調理包",
+            "手作香草茶與特色飲品"
+          ]
+        },
+        {
+          "title": "電商科 · 流量引擎",
+          "points": [
+            "網站關鍵字 SEO 排行",
+            "IG / TikTok 短影音導流",
+            "轉換率與銷售數據分析"
+          ]
+        },
+        {
+          "title": "寵物經營科 · 毛孩經濟",
+          "points": [
+            "無添加天然寵物鮮食肉乾",
+            "毛孩美容與照護預約服務",
+            "客製防走失項圈名牌文創"
+          ]
+        },
+        {
+          "title": "電子科 · 智慧生活",
+          "points": [
+            "IoT 智能自動餵食定時器",
+            "溫濕度感測氛圍小夜燈",
+            "創客專屬電子套件接單"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": 38,
+    "module": "模組 5 · 四大科系深度聯名實作指南",
+    "badge": "餐飲科實戰 · 38/50",
+    "title": "餐飲科深度合作：舌尖上的即食商機",
+    "subtitle": "將專業主廚技術化為高回購率商品，透過線上表單實現預約取餐與宅配",
+    "type": "cards-3",
+    "data": {
+      "insight": "美食是最具病毒傳播力的產品。透過精緻包裝與線上預購，徹底解決餐飲保存期限制。",
+      "cards": [
+        {
+          "tag": "爆款產品 A",
+          "title": "職人手作可麗露/巴斯克乳酪",
+          "desc": "主打使用法國進口奶油、在地小農雞蛋，每週限量出爐 50 顆，表單開賣立刻秒殺搶購。"
+        },
+        {
+          "tag": "爆款產品 B",
+          "title": "私房舒肥雞胸肉/健康調理包",
+          "desc": "鎖定校內運動健身族群與老師，主打低脂高蛋白、多種特調異國風味，真空冷凍包裝便於保存。"
+        },
+        {
+          "tag": "表單運作秘訣",
+          "title": "設定校內限時取餐時段",
+          "desc": "在表單設定『每週三中午 12:10 - 13:00 系辦門口取貨』，集中交付，零運費成本最受歡迎！"
+        }
+      ]
+    }
+  },
+  {
+    "id": 39,
+    "module": "模組 5 · 四大科系深度聯名實作指南",
+    "badge": "電商科實戰 · 39/50",
+    "title": "電商科深度合作：數據與流量超級加速器",
+    "subtitle": "結合電商科的數位行銷專業，讓你的網站不再是孤島，而是流量匯聚點",
+    "type": "cards-3",
+    "data": {
+      "insight": "好產品配上好行銷，才是爆發的公式。邀請電商科同學將專案作為實戰操盤作業。",
+      "cards": [
+        {
+          "tag": "流量武器一",
+          "title": "SEO 搜尋引擎在地關鍵字優化",
+          "desc": "鎖定『中壢手作甜點推薦』、『桃園校園伴手禮』等長尾關鍵字，讓 Google 搜尋自然引流。"
+        },
+        {
+          "tag": "流量武器二",
+          "title": "短影音內容切片與社群擴散",
+          "desc": "拍攝 15 秒甜點切開爆漿、寵物狼吞虎嚥的療癒短影音，文案直球導流點擊主頁表單連結。"
+        },
+        {
+          "tag": "數據武器三",
+          "title": "表單跳出率與顧客流失診斷",
+          "desc": "統計訪客點進表單到實際送出的轉換率，優化問題順序，讓下單轉換率翻倍提升！"
+        }
+      ]
+    }
+  },
+  {
+    "id": 40,
+    "module": "模組 5 · 四大科系深度聯名實作指南",
+    "badge": "寵物科實戰 · 40/50",
+    "title": "寵物經營科深度合作：搶佔高黏著毛孩商機",
+    "subtitle": "現代人把毛孩當家人疼愛！結合專業照護知識，打造最安心的寵物專區",
+    "type": "cards-3",
+    "data": {
+      "insight": "寵物市場具有極高的客戶終身價值 (LTV)。只要一次建立信任，飼主會持續回購數年。",
+      "cards": [
+        {
+          "tag": "實體商品",
+          "title": "天然低溫烘焙寵物零食肉乾",
+          "desc": "寵物科同學運用專業營養學調配，100% 純肉低溫烘乾無防腐劑，毛孩安心吃，爸媽最放心。"
+        },
+        {
+          "tag": "服務預約",
+          "title": "到府安親、梳毛與行為諮詢表單",
+          "desc": "運用表單預約假日到府代遛、貓咪到府餵食或基礎洗澡美容服務，解決上班族出差出遊痛點。"
+        },
+        {
+          "tag": "文創周邊",
+          "title": "客製雷射雕刻防走失名牌",
+          "desc": "輸入毛孩名字與主人電話，客製精美木質或金屬項圈吊牌，成本低、利潤高、紀念價值十足。"
+        }
+      ]
+    }
+  },
+  {
+    "id": 41,
+    "module": "模組 5 · 四大科系深度聯名實作指南",
+    "badge": "電子科實戰 · 41/50",
+    "title": "電子科深度合作：科技創客與智慧硬體",
+    "subtitle": "用微控制器與物聯網感測技術，打造獨一無二的智慧科技生活好物",
+    "type": "cards-3",
+    "data": {
+      "insight": "硬體科技賦予品牌強大的專業壁壘。將複雜電子電路封裝成溫暖可愛的文創科技小物。",
+      "cards": [
+        {
+          "tag": "科技小物 A",
+          "title": "溫濕度感測彩虹氛圍小夜燈",
+          "desc": "電子科同學編寫韌體，根據宿舍/房間溫濕度自動變換燈光顏色，既實用又具備極客美學。"
+        },
+        {
+          "tag": "科技小物 B",
+          "title": "定時自動震動寵物逗貓逗狗盒",
+          "desc": "Arduino 微型控制器驅動，隨機不規則移動或發出雷射光斑，成為飼主不在家時的放電神物。"
+        },
+        {
+          "tag": "創客接單",
+          "title": "客製電路焊接與 3D 列印外殼接單",
+          "desc": "在網站開設『創客客製專區』，顧客透過表單上傳規格或 3D 檔案，由電子科同學承接打樣！"
+        }
+      ]
+    }
+  },
+  {
+    "id": 42,
+    "module": "模組 5 · 四大科系深度聯名實作指南",
+    "badge": "跨科綜效 · 42/50",
+    "title": "跨科四重奏：打造 1 + 1 > 2 的夢幻組合商品",
+    "subtitle": "打破單一科系界線！當電子科遇上寵物科、餐飲科遇上電商科，奇蹟發生了",
+    "type": "split-cards",
+    "data": {
+      "insight": "真正的創新往往發生在學科的交界處。多元專業碰撞，能誕生市場上前所未見的獨特產品。",
+      "cards": [
+        {
+          "title": "跨科夢幻聯名案例 A：智慧寵物照護禮盒",
+          "points": [
+            "【電子科】提供自動定時開蓋餵食小裝置，精準控制餵食時間。",
+            "【寵物科】提供高營養無添加手作肉乾，保證食品新鮮與健康。",
+            "【電商網站】整合包裝成『週末安心出遊寵物照護禮盒』，客單價高達 NT$ 1,280！"
+          ]
+        },
+        {
+          "title": "跨科夢幻聯名案例 B：節慶跨域野餐大禮包",
+          "points": [
+            "【餐飲科】提供精緻手工磅蛋糕與特調冷泡冷萃茶包。",
+            "【電子科】提供便攜式太陽能氛圍露營燈，夜晚野餐超有氛圍。",
+            "【電商科】操盤 IG 網美打卡活動，表單預約限量 100 組快速完售！"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": 43,
+    "module": "模組 5 · 四大科系深度聯名實作指南",
+    "badge": "顧客體驗 · 43/50",
+    "title": "完整顧客體驗旅程 (Customer Journey)",
+    "subtitle": "從看見校園聯名到成為死忠常客，步步緊扣的感動體驗設計",
+    "type": "stepper",
+    "data": {
+      "insight": "每一次與顧客的接觸點，都是品牌價值的累積。讓買家感受到支持學生夢想的溫暖力量。",
+      "steps": [
+        {
+          "phase": "第一步：社群看見",
+          "title": "被真誠的聯名故事吸引",
+          "tag": "認知喚醒",
+          "desc": "在 IG 看見短影音：『當餐飲科與電子科聯手，會誕生什麼樣的禮盒？』引起好奇點擊。"
+        },
+        {
+          "phase": "第二步：網站瀏覽",
+          "title": "官網清楚展示特色與理念",
+          "tag": "認同深化",
+          "desc": "滑動瀏覽高畫質照片、研發同學心得、檢驗報告與透明公開的三層定價。"
+        },
+        {
+          "phase": "第三步：表單下單",
+          "title": "1 分鐘快速完成訂購與轉帳",
+          "tag": "無痛成交",
+          "desc": "欄位簡潔好填，送出後秒收到自動確認 Email，隨即完成銀行轉帳回傳後五碼。"
+        },
+        {
+          "phase": "第四步：開箱驚喜",
+          "title": "親手包裝的精緻商品與手寫小卡",
+          "tag": "主動擴散",
+          "desc": "收到附有創辦人手寫感謝卡的精緻包裹，買家主動拍照發 IG 限動分享！"
+        }
+      ]
+    }
+  },
+  {
+    "id": 44,
+    "module": "模組 5 · 四大科系深度聯名實作指南",
+    "badge": "模組總結 · 44/50",
+    "title": "模組總結：讓校園專業在市場上發光",
+    "subtitle": "你所搭建的網站不只是一個賣場，更是展現校園跨域才華的耀眼舞台",
+    "type": "conclusion",
+    "data": {
+      "insight": "當你為別人的才華搭建舞台時，你也同時成就了自己作為商業領袖的高度與影響力。",
+      "actions": [
+        {
+          "step": "行動一",
+          "title": "選定第一組聯名主力產品",
+          "desc": "從四大科系中挑選一個最容易打樣起步的品項，作為專案首發主打款。"
+        },
+        {
+          "step": "行動二",
+          "title": "邀請科系同學擔任共同研發人",
+          "desc": "在網站明確放上合作同學與指導老師的照片或掛名，讓榮譽感成為最好的動力。"
+        },
+        {
+          "step": "行動三",
+          "title": "完成專屬商品頁與表單上架",
+          "desc": "今天就把這項聯名商品的介紹與預購表單連結置入你的官方網站！"
+        }
+      ]
+    }
+  },
+  {
+    "id": 45,
+    "module": "模組 6 · 期末專題發表與實踐藍圖",
+    "badge": "模組導言 · 45/50",
+    "title": "成果展現時刻：讓企劃在眾人面前發光",
+    "subtitle": "把這幾週的思考、摸索與跨域串聯，化為一場讓人留下深刻印象的專案展示",
+    "type": "split-cards",
+    "data": {
+      "insight": "商業世界永遠重視交付與結果。今天我們完成的不僅是作業，更是一張能證明實戰能力的履歷代表作。",
+      "cards": [
+        {
+          "title": "傳統課堂報告的痛點",
+          "points": [
+            "照本宣科唸投影片，台下聽眾昏昏欲睡。",
+            "全是空泛的理論名詞，沒有任何真實市場數據支撐。",
+            "期末結束後檔案隨手關閉，沒有留下任何長久資產。"
+          ]
+        },
+        {
+          "title": "實戰型 Pitch 簡報的魅力",
+          "points": [
+            "現場拿出手機直接展示活生生上線的官方網站。",
+            "秀出真實表單收到的訂單通知信件與買家好評截圖。",
+            "擁有具體商業營運數據，讓評審與老師驚豔不已！"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": 46,
+    "module": "模組 6 · 期末專題發表與實踐藍圖",
+    "badge": "實作檢核 · 46/50",
+    "title": "專案上線 30 分鐘實作衝刺檢核表",
+    "subtitle": "逐條勾稽確認你的自建品牌網站與表單系統是否已具備正式營運水準",
+    "type": "quad-grid",
+    "data": {
+      "insight": "發布前務必親自走一遍流程。魔鬼藏在細節裡，順暢的體驗是顧客信任的起點。",
+      "quads": [
+        {
+          "title": "1. 品牌與首頁檢核",
+          "points": [
+            "公司品牌名稱清楚顯眼",
+            "一句話品牌價值口號動人",
+            "100 字品牌故事打動人心"
+          ]
+        },
+        {
+          "title": "2. 商品展示檢核",
+          "points": [
+            "至少 3 張高清晰生活情境照片",
+            "FAB 利益說明文字直擊痛點",
+            "三層定價標示清楚無歧義"
+          ]
+        },
+        {
+          "title": "3. 表單金流檢核",
+          "points": [
+            "下單按鈕超連結正確無失效",
+            "Google 表單欄位精簡好填寫",
+            "測試送出後信箱確實收到即時通知"
+          ]
+        },
+        {
+          "title": "4. 跨域聯名檢核",
+          "points": [
+            "列出合作科系（餐飲/電商/寵物/電子）",
+            "聯名產品特色與分潤模式明確",
+            "附上安心保證與防詐免責叮嚀"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": 47,
+    "module": "模組 6 · 期末專題發表與實踐藍圖",
+    "badge": "評分規準 · 47/50",
+    "title": "自媒體電商專案評分指標 (Rubric)",
+    "subtitle": "全方位衡量專案的商業思維、執行完整度與跨域整合力",
+    "type": "cards-3",
+    "data": {
+      "insight": "評分不是為了打分數，而是為了幫你照出盲點，讓你的商業專題更具競爭力。",
+      "cards": [
+        {
+          "tag": "權重 35%",
+          "title": "網站完整度與體驗流暢度",
+          "desc": "品牌定位鮮明、商品攝影高質感、文字排版排版大氣易讀，表單下單與發信機制運作零失誤。"
+        },
+        {
+          "tag": "權重 35%",
+          "title": "跨科系合作實踐與商模可行性",
+          "desc": "具體串聯校園專業科系資源，合作提案書架構嚴謹，定價與分潤邏輯清晰且具真實實踐可行性。"
+        },
+        {
+          "tag": "權重 30%",
+          "title": "發表表達力與創業家熱情",
+          "desc": "3 分鐘精準提煉重點、台風穩健自信，能流暢回答評審對市場競品、定價與客群的深入提問。"
+        }
+      ]
+    }
+  },
+  {
+    "id": 48,
+    "module": "模組 6 · 期末專題發表與實踐藍圖",
+    "badge": "Pitch 技巧 · 48/50",
+    "title": "3 分鐘電梯簡報架構 (Elevator Pitch)",
+    "subtitle": "用最精煉的黃金結構，在 180 秒內抓住全場評審與投資人的耳朵",
+    "type": "stepper",
+    "data": {
+      "insight": "講得長不叫厲害，能在 3 分鐘內把商業故事說得引人入勝、讓人想掏錢購買，才是真功夫。",
+      "steps": [
+        {
+          "phase": "前 30 秒",
+          "title": "直擊痛點的震撼開場",
+          "tag": "吸睛 Hook",
+          "desc": "『大家是否遇過……？為了解決這個問題，我們創立了【品牌名稱】！』"
+        },
+        {
+          "phase": "中間 60 秒",
+          "title": "展示網站商品與跨科系聯名",
+          "tag": "亮出實力",
+          "desc": "『我們與餐飲科聯名推出……透過表單下單，解決傳統通路抽成高、預購不便的問題。』"
+        },
+        {
+          "phase": "後 60 秒",
+          "title": "展示真實訂單數據與顧客反饋",
+          "tag": "證明可行",
+          "desc": "『上線短短三天，我們已經透過信箱收到 25 筆真實訂單，顧客給予五星好評！』"
+        },
+        {
+          "phase": "最後 30 秒",
+          "title": "強而有力的結尾號召",
+          "tag": "Call to Action",
+          "desc": "『歡迎大家立刻掃描螢幕上的 QR Code 造訪我們的網站，支持校園新創！謝謝大家！』"
+        }
+      ]
+    }
+  },
+  {
+    "id": 49,
+    "module": "模組 6 · 期末專題發表與實踐藍圖",
+    "badge": "四講總綱 · 49/50",
+    "title": "全四講 200 頁知識拼圖大圓滿",
+    "subtitle": "觀念重構 ➔ 實務打通 ➔ 全域增長 ➔ 專題實踐：你的超級個人商業帝國",
+    "type": "stepper",
+    "data": {
+      "insight": "四個講次、200 頁無邊框大字體全景簡報，構成一套完整互鎖的數位商業作戰體系！",
+      "steps": [
+        {
+          "phase": "第一講 (觀念篇)",
+          "title": "重構心智模型與 Agent 核心四器官",
+          "tag": "50 頁戰略思維",
+          "desc": "一人微型企業利潤思維，Supervisor-Worker 架構與司令官視野。"
+        },
+        {
+          "phase": "第二講 (實務篇)",
+          "title": "親手打通電商網站架設與端到端全流程",
+          "tag": "50 頁動手操作",
+          "desc": "PAS 文案工程、黑貓運費演算法、超商取貨免運與工作流程自動化。"
+        },
+        {
+          "phase": "第三講 (增長篇)",
+          "title": "全域流量獲取、產品組合與智慧投放",
+          "tag": "50 頁規模擴張",
+          "desc": "公私域漏斗、SEO/GEO 雙重優化、產品組合護城河與多代理人作戰室。"
+        },
+        {
+          "phase": "第四講 (實踐篇)",
+          "title": "品牌專題實作、表單金流與四大科系聯名",
+          "tag": "50 頁專案實踐",
+          "desc": "公司命名理念、表單自動發信通知、串聯餐飲/電商/寵物/電子跨域成果！"
+        }
+      ]
+    }
+  },
+  {
+    "id": 50,
+    "module": "模組 6 · 期末專題發表與實踐藍圖",
+    "badge": "畢業結語 · 50/50",
+    "title": "結語：行動，是檢驗創新的唯一標準！",
+    "subtitle": "帶著全四講 200 頁的底氣與勇氣，今天就開啟屬於你的自媒體電商傳奇！",
+    "type": "conclusion",
+    "data": {
+      "insight": "世上從不缺乏偉大的夢想，缺乏的是立刻動手的行動家。去搭建你的網站，去敲開合作的門，世界正在等你！",
+      "actions": [
+        {
+          "step": "第一句期許",
+          "title": "永遠相信自己的創造力",
+          "desc": "別讓任何人的懷疑阻擋你的腳步，你親手打造的品牌，就是世界獨一無二的風景。"
+        },
+        {
+          "step": "第二句期許",
+          "title": "永遠用真誠感動每位顧客",
+          "desc": "用心對待每一封表單送達的信件，真誠服務每位信任你的朋友，品牌自會開花結果。"
+        },
+        {
+          "step": "第三句期許",
+          "title": "永遠勇敢跨域探索新邊界",
+          "desc": "打破專業的圍牆，擁抱 Agentic AI 與身邊的夥伴，成為引領新世代的商業開拓者！"
+        }
+      ]
+    }
+  }
+];
+
+    let currentSlide = 0;
+    const totalSlides = slidesData.length;
+
+    function renderSlide(index) {
+      const data = slidesData[index];
+      const wrapper = document.getElementById("slide-wrapper");
+      
+      const progressPercent = ((index + 1) / totalSlides) * 100;
+      document.getElementById("progress-bar").style.width = `${progressPercent}%`;
+      const counterText = `${String(index + 1).padStart(2, '0')} / ${totalSlides}`;
+      document.getElementById("page-counter").innerText = counterText;
+      document.getElementById("fs-page-counter").innerText = counterText;
+      document.getElementById("header-module-label").innerText = data.module;
+
+      document.getElementById("prev-btn").disabled = (index === 0);
+      document.getElementById("next-btn").disabled = (index === totalSlides - 1);
+
+      let contentHtml = "";
+
+      // 1. 首頁 (Hero Cover)
+      if (data.type === "hero") {
+        contentHtml = `
+          <div class="flex-1 flex flex-col justify-between space-y-8">
+            <div class="space-y-5">
+              <div class="flex items-center gap-3">
+                <span class="warm-badge bg-terracotta-100 text-terracotta-700 border border-terracotta-300 slide-text-badge px-4 py-1.5">
+                  <i data-lucide="sparkles" class="w-6 h-6"></i> ${data.badge}
+                </span>
+                <span class="slide-text-meta font-extrabold text-warm-600 uppercase tracking-wider">${data.module}</span>
+              </div>
+              <h1 class="slide-text-hero font-black text-warm-900 tracking-tight leading-tight">
+                ${data.title}
+              </h1>
+              <p class="slide-text-subhead font-bold text-terracotta-600">
+                ${data.subtitle}
+              </p>
+              ${data.data.tagline ? `
+                <div class="p-6 rounded-2xl bg-warm-100 border-l-8 border-terracotta-500 slide-text-body font-bold text-warm-900 shadow-sm">
+                  ${data.data.tagline}
+                </div>
+              ` : ''}
+            </div>
+
+            <!-- 數據大字報 -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              ${data.data.stats.map(s => `
+                <div class="warm-card p-6 border-t-8 border-terracotta-500 text-center sm:text-left">
+                  <div class="slide-text-stat font-black text-terracotta-600 mb-2">${s.num}</div>
+                  <div class="slide-text-body font-bold text-warm-800">${s.label}</div>
+                </div>
+              `).join('')}
+            </div>
+
+            <!-- 核心概念 -->
+            <div class="p-6 rounded-2xl bg-sage-50 border-2 border-sage-300 text-sage-950 slide-text-body font-bold flex items-center gap-4 shadow-sm">
+              <i data-lucide="check-circle" class="w-8 h-8 text-sage-600 flex-shrink-0"></i>
+              <span>${data.data.coreConcept}</span>
+            </div>
+          </div>
+        `;
+      }
+      // 2. 教師自介 (Profile Slide)
+      else if (data.type === "profile_slide") {
+        contentHtml = `
+          <div class="flex-1 flex flex-col justify-between space-y-6">
+            <div>
+              <div class="flex items-center gap-3 mb-2">
+                <span class="warm-badge bg-terracotta-100 text-terracotta-700 border border-terracotta-300 slide-text-badge px-4 py-1.5">
+                  <i data-lucide="user-check" class="w-6 h-6"></i> ${data.badge}
+                </span>
+                <span class="slide-text-meta font-bold text-warm-600">${data.module}</span>
+              </div>
+              <h2 class="slide-text-title font-black text-warm-900 tracking-tight">${data.title}</h2>
+              <p class="slide-text-subhead font-bold text-terracotta-600 mt-1">${data.subtitle}</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1 items-stretch">
+              ${data.data.sections.map(sec => `
+                <div class="warm-card p-6 flex flex-col justify-between">
+                  <div>
+                    <div class="flex items-center gap-3 mb-4 pb-3 border-b-2 border-warm-200">
+                      <div class="w-12 h-12 rounded-xl bg-warm-100 text-terracotta-600 flex items-center justify-center font-black flex-shrink-0">
+                        <i data-lucide="${sec.icon}" class="w-7 h-7"></i>
+                      </div>
+                      <h3 class="slide-text-subhead font-bold text-warm-900">${sec.title}</h3>
+                    </div>
+                    <ul class="space-y-3 slide-text-body text-warm-800 font-semibold">
+                      ${sec.items.map(item => `
+                        <li class="flex items-start gap-3">
+                          <span class="w-2.5 h-2.5 rounded-full bg-terracotta-500 mt-3 flex-shrink-0"></span>
+                          <span>${item}</span>
+                        </li>
+                      `).join('')}
+                    </ul>
+                  </div>
+                  <div class="mt-5 pt-3 border-t border-warm-200 slide-text-meta font-bold text-sage-700 flex items-center gap-2">
+                    <i data-lucide="check" class="w-6 h-6"></i> 企管實務強化
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+
+            <!-- 聯絡列 -->
+            <div class="p-5 rounded-2xl bg-warm-100 border-2 border-warm-200 flex flex-wrap items-center justify-between gap-4 slide-text-body font-bold text-warm-900">
+              <div class="flex items-center gap-6 flex-wrap">
+                <span class="flex items-center gap-2"><i data-lucide="mail" class="w-7 h-7 text-terracotta-500"></i> ${data.data.email}</span>
+                <span class="flex items-center gap-2"><i data-lucide="map-pin" class="w-7 h-7 text-sage-600"></i> ${data.data.office}</span>
+              </div>
+              <a href="${data.data.website}" target="_blank" class="text-terracotta-600 font-extrabold hover:underline flex items-center gap-2">
+                <span>個人官方網站 (Portfolio)</span> <i data-lucide="external-link" class="w-6 h-6"></i>
+              </a>
+            </div>
+          </div>
+        `;
+      }
+      // 3. 四大核心圖卡 (Four Pillars)
+      else if (data.type === "four_pillars") {
+        contentHtml = `
+          <div class="flex-1 flex flex-col justify-between space-y-6">
+            <div>
+              <div class="flex items-center gap-3 mb-2">
+                <span class="warm-badge bg-warm-200 text-warm-800 border border-warm-300 slide-text-badge px-4 py-1.5">
+                  ${data.badge}
+                </span>
+                <span class="slide-text-meta font-bold text-warm-600">${data.module}</span>
+              </div>
+              <h2 class="slide-text-title font-black text-warm-900 tracking-tight">${data.title}</h2>
+              <p class="slide-text-subhead font-bold text-warm-600 mt-1">${data.subtitle}</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 flex-1 items-stretch">
+              ${data.data.pillars.map((p, idx) => `
+                <div class="warm-card p-6 flex flex-col justify-between hover:border-terracotta-400 transition">
+                  <div>
+                    <div class="flex items-center gap-3.5 mb-3">
+                      <div class="w-12 h-12 rounded-xl bg-warm-100 text-terracotta-600 flex items-center justify-center font-black flex-shrink-0">
+                        <i data-lucide="${p.icon || 'star'}" class="w-7 h-7"></i>
+                      </div>
+                      <h3 class="slide-text-subhead font-bold text-warm-900">${p.name}</h3>
+                    </div>
+                    <p class="slide-text-body text-warm-800 font-semibold leading-relaxed">${p.detail}</p>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+
+            <div class="p-5 rounded-2xl bg-warm-100 border-2 border-warm-200 flex items-center gap-3 slide-text-body font-bold text-warm-900 shadow-sm">
+              <i data-lucide="lightbulb" class="w-8 h-8 text-terracotta-500 flex-shrink-0"></i>
+              <span>${data.data.insight}</span>
+            </div>
+          </div>
+        `;
+      }
+      // 4. 雙欄對比 (Comparison)
+      else if (data.type === "comparison") {
+        contentHtml = `
+          <div class="flex-1 flex flex-col justify-between space-y-6">
+            <div>
+              <div class="flex items-center gap-3 mb-2">
+                <span class="warm-badge bg-terracotta-100 text-terracotta-700 border border-terracotta-300 slide-text-badge px-4 py-1.5">
+                  ${data.badge}
+                </span>
+                <span class="slide-text-meta font-bold text-warm-600">${data.module}</span>
+              </div>
+              <h2 class="slide-text-title font-black text-warm-900 tracking-tight">${data.title}</h2>
+              <p class="slide-text-subhead font-bold text-warm-600 mt-1">${data.subtitle}</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 flex-1 items-stretch">
+              <div class="p-6 rounded-2xl bg-warm-50 border-2 border-warm-200 flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center justify-between mb-4 pb-3 border-b-2 border-warm-200">
+                    <h3 class="slide-text-subhead font-bold text-warm-900">${data.data.leftTitle}</h3>
+                    <span class="px-3.5 py-1 rounded-full slide-text-meta font-bold bg-stone-200 text-stone-700">${data.data.leftBadge}</span>
+                  </div>
+                  <div class="space-y-3.5">
+                    ${data.data.leftPoints.map(pt => `
+                      <div class="flex items-start gap-3 slide-text-body text-warm-700 font-semibold">
+                        <i data-lucide="x" class="w-6 h-6 text-stone-400 mt-1.5 flex-shrink-0"></i>
+                        <span>${pt}</span>
+                      </div>
+                    `).join('')}
+                  </div>
+                </div>
+              </div>
+
+              <div class="p-6 rounded-2xl bg-white border-4 border-terracotta-500 flex flex-col justify-between shadow-lg">
+                <div>
+                  <div class="flex items-center justify-between mb-4 pb-3 border-b-2 border-terracotta-100">
+                    <h3 class="slide-text-subhead font-bold text-terracotta-600 flex items-center gap-2">
+                      <i data-lucide="zap" class="w-7 h-7 text-terracotta-500"></i> ${data.data.rightTitle}
+                    </h3>
+                    <span class="px-3.5 py-1 rounded-full slide-text-meta font-bold bg-terracotta-100 text-terracotta-700">${data.data.rightBadge}</span>
+                  </div>
+                  <div class="space-y-3.5">
+                    ${data.data.rightPoints.map(pt => `
+                      <div class="flex items-start gap-3 slide-text-body text-warm-900 font-bold">
+                        <i data-lucide="check" class="w-6 h-6 text-sage-600 mt-1.5 flex-shrink-0 font-bold"></i>
+                        <span>${pt}</span>
+                      </div>
+                    `).join('')}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-5 rounded-2xl bg-warm-100 border-2 border-warm-200 flex items-center gap-3 slide-text-body font-bold text-warm-900 shadow-sm">
+              <i data-lucide="lightbulb" class="w-8 h-8 text-terracotta-500 flex-shrink-0"></i>
+              <span>${data.data.insight}</span>
+            </div>
+          </div>
+        `;
+      }
+      // 5. 流程步驟 (Stepper)
+      else if (data.type === "stepper") {
+        contentHtml = `
+          <div class="flex-1 flex flex-col justify-between space-y-6">
+            <div>
+              <div class="flex items-center gap-3 mb-2">
+                <span class="warm-badge bg-sage-100 text-sage-700 border border-sage-300 slide-text-badge px-4 py-1.5">
+                  ${data.badge}
+                </span>
+                <span class="slide-text-meta font-bold text-warm-600">${data.module}</span>
+              </div>
+              <h2 class="slide-text-title font-black text-warm-900 tracking-tight">${data.title}</h2>
+              <p class="slide-text-subhead font-bold text-warm-600 mt-1">${data.subtitle}</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 flex-1 items-stretch">
+              ${data.data.steps.map((st, i) => `
+                <div class="warm-card p-6 flex flex-col justify-between hover:border-terracotta-400 transition">
+                  <div>
+                    <div class="flex items-center justify-between mb-3.5">
+                      <span class="w-12 h-12 rounded-full bg-warm-100 border-2 border-warm-300 text-warm-900 font-black slide-text-subhead flex items-center justify-center">
+                        ${i+1}
+                      </span>
+                      <span class="px-3 py-1 rounded-lg slide-text-meta font-bold bg-terracotta-50 text-terracotta-700 border border-terracotta-200">
+                        ${st.tag}
+                      </span>
+                    </div>
+                    <div class="slide-text-meta font-bold text-warm-500 mb-1">${st.phase}</div>
+                    <h3 class="slide-text-subhead font-bold text-warm-900 mb-3">${st.title}</h3>
+                    <p class="slide-text-body text-warm-800 font-semibold leading-relaxed">${st.desc}</p>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+
+            <div class="p-5 rounded-2xl bg-warm-100 border-2 border-warm-200 flex items-center gap-3 slide-text-body font-bold text-warm-900 shadow-sm">
+              <i data-lucide="lightbulb" class="w-8 h-8 text-terracotta-500 flex-shrink-0"></i>
+              <span>${data.data.insight}</span>
+            </div>
+          </div>
+        `;
+      }
+      // 6. 視覺化佈局 (Visual Matrix)
+      else if (data.type === "visual_matrix") {
+        contentHtml = `
+          <div class="flex-1 flex flex-col justify-between space-y-6">
+            <div>
+              <div class="flex items-center gap-3 mb-2">
+                <span class="warm-badge bg-warm-200 text-warm-800 border border-warm-300 slide-text-badge px-4 py-1.5">
+                  ${data.badge}
+                </span>
+                <span class="slide-text-meta font-bold text-warm-600">${data.module}</span>
+              </div>
+              <h2 class="slide-text-title font-black text-warm-900 tracking-tight">${data.title}</h2>
+              <p class="slide-text-subhead font-bold text-warm-600 mt-1">${data.subtitle}</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-${data.data.cards.length === 3 ? '3' : '2'} gap-6 flex-1 items-stretch">
+              ${data.data.cards.map(c => `
+                <div class="warm-card p-6 flex flex-col justify-between hover:border-terracotta-400 transition">
+                  <div>
+                    <div class="w-12 h-12 rounded-xl bg-warm-100 text-terracotta-600 flex items-center justify-center font-black mb-3.5">
+                      <i data-lucide="${c.icon || 'box'}" class="w-7 h-7"></i>
+                    </div>
+                    <h3 class="slide-text-subhead font-bold text-warm-900 mb-2">${c.title}</h3>
+                    <p class="slide-text-body text-warm-800 font-semibold leading-relaxed">${c.desc}</p>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+
+            <div class="p-5 rounded-2xl bg-warm-100 border-2 border-warm-200 flex items-center gap-3 slide-text-body font-bold text-warm-900 shadow-sm">
+              <i data-lucide="lightbulb" class="w-8 h-8 text-terracotta-500 flex-shrink-0"></i>
+              <span>${data.data.insight}</span>
+            </div>
+          </div>
+        `;
+      }
+      // 7. 流程總覽 (Flow Chart) - 升級為 3x2 格局，確保 28pt 大字體絕不擁擠
+      else if (data.type === "flow_chart") {
+        contentHtml = `
+          <div class="flex-1 flex flex-col justify-between space-y-6">
+            <div>
+              <div class="flex items-center gap-3 mb-2">
+                <span class="warm-badge bg-sage-100 text-sage-700 border border-sage-300 slide-text-badge px-4 py-1.5">
+                  ${data.badge}
+                </span>
+                <span class="slide-text-meta font-bold text-warm-600">${data.module}</span>
+              </div>
+              <h2 class="slide-text-title font-black text-warm-900 tracking-tight">${data.title}</h2>
+              <p class="slide-text-subhead font-bold text-warm-600 mt-1">${data.subtitle}</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 flex-1 items-stretch">
+              ${data.data.flow.map(f => `
+                <div class="warm-card p-6 flex flex-col justify-between text-left hover:border-terracotta-400 transition">
+                  <div>
+                    <div class="flex items-center gap-3 mb-3">
+                      <div class="w-10 h-10 rounded-full bg-terracotta-100 text-terracotta-700 font-black slide-text-meta flex items-center justify-center border-2 border-terracotta-300 flex-shrink-0">
+                        ${f.step}
+                      </div>
+                      <h3 class="slide-text-subhead font-bold text-warm-900">${f.name}</h3>
+                    </div>
+                    <p class="slide-text-body text-warm-800 font-semibold leading-relaxed">${f.desc}</p>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+
+            <div class="p-5 rounded-2xl bg-warm-100 border-2 border-warm-200 flex items-center gap-3 slide-text-body font-bold text-warm-900 shadow-sm">
+              <i data-lucide="lightbulb" class="w-8 h-8 text-terracotta-500 flex-shrink-0"></i>
+              <span>${data.data.insight}</span>
+            </div>
+          </div>
+        `;
+      }
+      // 8. 結論 (Conclusion)
+      else if (data.type === "conclusion") {
+        contentHtml = `
+          <div class="flex-1 flex flex-col justify-between space-y-6">
+            <div>
+              <span class="warm-badge bg-terracotta-500 text-white font-bold mb-2 slide-text-badge px-4 py-1.5">
+                ${data.badge}
+              </span>
+              <h2 class="slide-text-hero font-black text-warm-900 tracking-tight mt-1">${data.title}</h2>
+              <p class="slide-text-subhead font-bold text-terracotta-600 mt-1">${data.subtitle}</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 flex-1 items-stretch">
+              ${data.data.actions.map(act => `
+                <div class="warm-card p-6 flex flex-col justify-between border-t-8 border-terracotta-500">
+                  <div>
+                    <span class="slide-text-meta font-black text-terracotta-600 tracking-wider">${act.step}</span>
+                    <h3 class="slide-text-subhead font-bold text-warm-900 mt-1 mb-3">${act.title}</h3>
+                    <p class="slide-text-body text-warm-800 font-semibold leading-relaxed">${act.desc}</p>
+                  </div>
+                  <div class="mt-5 pt-3 border-t border-warm-200 slide-text-meta font-bold text-sage-700 flex items-center gap-2">
+                    <i data-lucide="check-circle" class="w-6 h-6"></i> 實戰落實目標
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+
+            <div class="p-6 rounded-2xl bg-terracotta-50 border-2 border-terracotta-300 text-center shadow-sm">
+              <p class="slide-text-subhead font-black text-terracotta-900">${data.data.insight}</p>
+              <p class="slide-text-meta text-warm-700 mt-1.5">全課 50 頁展示完畢 ｜ 祝各位同學成功打造個人專屬 AI Agent 團隊！</p>
+            </div>
+          </div>
+        `;
+      }
+
+      wrapper.innerHTML = contentHtml;
+      lucide.createIcons();
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides - 1) {
+        currentSlide++;
+        renderSlide(currentSlide);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 0) {
+        currentSlide--;
+        renderSlide(currentSlide);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    function goToSlide(index) {
+      currentSlide = index;
+      renderSlide(currentSlide);
+      toggleDrawer(false);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // 鍵盤導航
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight" || e.key === "Space") {
+        e.preventDefault();
+        nextSlide();
+      } else if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        prevSlide();
+      } else if (e.key.toLowerCase() === "f") {
+        e.preventDefault();
+        toggleFullScreen();
+      } else if (e.key.toLowerCase() === "m") {
+        e.preventDefault();
+        toggleDrawer();
+      } else if (e.key === "Escape") {
+        if (document.body.classList.contains("is-fullscreen")) {
+          toggleFullScreen(false);
+        } else {
+          toggleDrawer(false);
+        }
+      }
+    });
+
+    // 真正滿版全螢幕控制（零邊框、撐滿 100vw x 100vh）
+    function toggleFullScreen(forceState) {
+      const isCurrentlyFs = document.body.classList.contains("is-fullscreen");
+      const shouldFs = (forceState !== undefined) ? forceState : !isCurrentlyFs;
+
+      if (shouldFs) {
+        document.body.classList.add("is-fullscreen");
+        if (document.documentElement.requestFullscreen && !document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        }
+      } else {
+        document.body.classList.remove("is-fullscreen");
+        if (document.exitFullscreen && document.fullscreenElement) {
+          document.exitFullscreen().catch(() => {});
+        }
+      }
+    }
+
+    document.addEventListener("fullscreenchange", () => {
+      if (document.fullscreenElement) {
+        document.body.classList.add("is-fullscreen");
+      } else {
+        document.body.classList.remove("is-fullscreen");
+      }
+    });
+
+    // 手機觸控左右滑動
+    let touchStartX = 0;
+    let touchStartY = 0;
+    document.addEventListener("touchstart", (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+      touchStartY = e.changedTouches[0].screenY;
+    }, { passive: true });
+
+    document.addEventListener("touchend", (e) => {
+      const touchEndX = e.changedTouches[0].screenX;
+      const touchEndY = e.changedTouches[0].screenY;
+      const diffX = touchEndX - touchStartX;
+      const diffY = touchEndY - touchStartY;
+
+      if (Math.abs(diffX) > 50 && Math.abs(diffX) > Math.abs(diffY)) {
+        if (diffX < 0) {
+          nextSlide();
+        } else {
+          prevSlide();
+        }
+      }
+    }, { passive: true });
+
+    function toggleDrawer(forceState) {
+      const drawer = document.getElementById("overview-drawer");
+      const backdrop = document.getElementById("drawer-backdrop");
+      const isOpen = !drawer.classList.contains("translate-x-full");
+      const shouldOpen = (forceState !== undefined) ? forceState : !isOpen;
+
+      if (shouldOpen) {
+        drawer.classList.remove("translate-x-full");
+        backdrop.classList.remove("hidden");
+      } else {
+        drawer.classList.add("translate-x-full");
+        backdrop.classList.add("hidden");
+      }
+    }
+
+    function buildDrawerList() {
+      const listContainer = document.getElementById("drawer-list");
+      listContainer.innerHTML = slidesData.map((s, idx) => `
+        <div onclick="goToSlide(${idx})" class="p-3.5 rounded-xl bg-white border border-warm-200 hover:border-terracotta-500 hover:shadow-sm cursor-pointer transition flex items-center justify-between group">
+          <div class="flex items-center gap-3 min-w-0">
+            <span class="w-8 h-8 rounded-lg bg-warm-100 text-warm-900 font-mono text-sm font-black flex items-center justify-center group-hover:bg-terracotta-500 group-hover:text-white transition flex-shrink-0">
+              ${String(idx + 1).padStart(2, '0')}
+            </span>
+            <div class="min-w-0">
+              <div class="text-sm font-bold text-warm-900 group-hover:text-terracotta-600 transition truncate">${s.title}</div>
+              <div class="text-xs text-warm-500 font-semibold truncate">${s.module}</div>
+            </div>
+          </div>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-warm-400 group-hover:text-terracotta-500 transition flex-shrink-0"></i>
+        </div>
+      `).join('');
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      buildDrawerList();
+      renderSlide(currentSlide);
+    });
+  </script>
+</body>
+</html>
